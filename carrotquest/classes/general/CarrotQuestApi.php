@@ -4,14 +4,18 @@ IncludeModuleLangFile( __FILE__ );
 class CarrotQuestApi
 {
 	public static $MODULE_ID = "carrotquest";
-	public $Error = false;
-    private $AuthToken;
+	public $Error = false; // Сюда запишется ошибка, если такая произойдет
+    private $AuthToken; // Токен для отсылки данных с сервера api.API-KEY.API-SECRET
 	
 	function __construct()
     {
         if (COption::GetOptionString("carrotquest", 'cqApiKey') != "" && COption::GetOptionString("carrotquest", 'cqApiSecret') != "")
             $this->AuthToken = 'app.' . COption::GetOptionString("carrotquest", 'cqApiKey') . '.' . COption::GetOptionString("carrotquest", 'cqApiSecret');
     }
+	
+	/* Выполняет подключение к carrotquest. JS объект carrotquest уже должен быть инициализирован.
+	*  Если пользователь залогинен, шлет идентификационные данные carrotquest.
+	*/
 	
 	public static function Connect ()
 	{
@@ -49,6 +53,7 @@ class CarrotQuestApi
 		return true;
 	}
 	
+	// Отправка любой информации запросом POST
 	private function HttpPost($url, $data) 
 	{
         $fields = '';
@@ -71,6 +76,7 @@ class CarrotQuestApi
 		return $result;
     }
 	
+	// Отправка любой информации запросом GET
 	private function HttpGet($url, $data) 
 	{
         $fields = '';
@@ -93,6 +99,7 @@ class CarrotQuestApi
 		return $result;
     }
 	
+	// Получение объекта, указывающего количество морковок, выбранных пользователем
 	public function GetSelectedCarrots ()
 	{
 		$data = array();
@@ -102,6 +109,7 @@ class CarrotQuestApi
 		return $answer["data"];
 	}
 	
+	// Отправка события о заказе
 	public function OrderConfirm ($ID, $arFields)
     {
 		// Делаю через сервер, чтоб не было проблем с безопасностью бонусов.

@@ -1,11 +1,9 @@
 <?
 	function askServer($arOrder)
 	{
-		// Сервер пока не работает, это заглушка
-		return array(	
-			max_discount => 0.5,
-			carrots_selected => 5,
-		);
+		// Получаем морковки
+		global $CQ;
+		return $CQ->GetSelectedCarrots();
 	}
 	function formatPrice ($price)
 	{
@@ -63,9 +61,30 @@
 	}
 	
 	$arResult = CalcDiscount($arResult);
+	
+	// При оформлении заказ недоступны item-ы этого заказа. Запишем их в куки.
+	if (COption::GetOptionString('carrotquest','cqTrackOrderConfirm') != '')
+	{
+		$cookie = array();
+		foreach ($arResult['BASKET_ITEMS'] as $value)
+		{
+			$item = array(
+				"objectId"		=> $value['ID'],
+				"objectName"	=> $value['NAME'],
+				"objectUrl"		=> $_SERVER['HTTP_HOST'].$value['DETAIL_PAGE_URL'],
+				"quantity"		=> $value['QUANTITY'],
+				"price"			=> $value['PRICE'],
+				//"fullObject"	=> $value
+			);
+			array_push($cookie,$item);
+		};
+		setcookie('CQBasketItems', json_encode($cookie));
+	};
+
 ?>
 <?/*
-	function outArray ($array, $name = '$array')
+	// Выводит массив в консоль. Просто для удобства отладки.
+	function outArray ($array, $name = '$array', $recursive = true)
 	{
 		if (!$array)
 		{
@@ -73,12 +92,12 @@
 		}
 		foreach ($array as $key => $val)
 		{
-			if (gettype($val) == "array" || gettype($val) == "object" )
+			if ((gettype($val) == "array" || gettype($val) == "object") && $recursive)
 				outArray($val, $name."['".$key."']");
 			else { ?>
 				<script>console.log("<?=$name;?>['<?= $key;?>'] = '<?= $val;?>'");</script>
 			<? };
 		};
 	};
-	outArray($arResult["PAY_SYSTEM"], '$arResult[\'PAY_SYSTEM\']');*/
+	outArray($arResult['BASKET_ITEMS'][0], '$arResult[\'BASKET_ITEMS\']', false);*/
 ?>

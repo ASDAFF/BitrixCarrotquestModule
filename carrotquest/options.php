@@ -1,24 +1,21 @@
 <?
 	/**
-	 * Идентификатор модуля
-	 */
-	$sModuleId  = 'carrotquest';
+	* Этот файл содержит описание настроек модулей в админке сайта (вкладка "Настройки" -> "Настройки модуля")
+	*/
+	
+	// Идентификатор модуля
+	$ModuleId  = 'carrotquest';
 	 
-	/**
-	 * Подключаем модуль (выполняем код в файле include.php)
-	 */
-	CModule::IncludeModule( $sModuleId );
+	// Подключаем модуль (выполняем код в файле include.php)
+	CModule::IncludeModule( $ModuleId );
 	 
-	/**
-	 * Языковые константы (файл lang/ru/options.php)
-	 */
+	// Языковые константы (файлы в папке lang заполняют этот массив в зависимости от языка. Пока ru или en)
 	global $MESS;
 	IncludeModuleLangFile( __FILE__ );
-	 
-	if( $REQUEST_METHOD == 'POST' && $_POST['Update'] == 'Y' ) {
-		/**
-		 * Если форма была сохранена, устанавливаем значение опции модуля
-		 */
+	
+	// Если форма была сохранена, устанавливаем значение опции модуля
+	if( $REQUEST_METHOD == 'POST' && $_POST['Update'] == 'Y' )
+	{
 		COption::SetOptionString("carrotquest","cqApiKey",$_POST['ApiKey']);
 		COption::SetOptionString("carrotquest","cqApiSecret",$_POST['ApiSecret']);
 		COption::SetOptionString("carrotquest","cqTrackCartAdd", $_POST['TrackCartAdd'] ? "checked" : "");
@@ -27,12 +24,11 @@
 		COption::SetOptionString("carrotquest","cqTrackProductDetails",$_POST['TrackProductDetails'] ? "checked" : "");
 		COption::SetOptionString("carrotquest","cqTrackOrderConfirm",$_POST['TrackOrderConfirm'] ? "checked" : "");
 		COption::SetOptionString("carrotquest","cqActivateBonus",$_POST['ActivateBonus'] ? "checked" : "");
-		
 	}
 	 
 	/**
 	 * Описываем табы административной панели битрикса
-	 * Пока один таб, где можно поменять API_KEY
+	 * Пока один таб, где можно поменять настройки ключей, событий, включить бонусы
 	 */
 	$aTabs = array(
 		array(
@@ -43,18 +39,14 @@
 		),
 	);
 	 
-	/**
-	 * Инициализируем табы
-	 */
+	// Инициализируем табы
 	$oTabControl = new CAdmintabControl( 'tabControl', $aTabs );
 	$oTabControl->Begin();
-	 
-	/**
-	 * Ниже пошла форма страницы с настройками модуля
-	 */
 ?>
-<form method="POST" enctype="multipart/form-data" action="<?= $APPLICATION->GetCurPage() ?>?mid=<?=htmlspecialchars( $sModuleId )?>&lang=<?= LANG?>">
-    <?=bitrix_sessid_post()?>
+
+<!-- Ниже пошла форма страницы с настройками модуля -->
+<form method="POST" enctype="multipart/form-data" action="<?= $APPLICATION->GetCurPage() ?>?mid=<?=htmlspecialchars( $ModuleId )?>&lang=<?= LANG?>">
+    <?=bitrix_sessid_post()?> <!-- Жизненно необходимая вставка, без нее ничего не работает. -->
     <?$oTabControl->BeginNextTab();?>
 	<!-- Настройки ключей -->
 	<tr class="heading">

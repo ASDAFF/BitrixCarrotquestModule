@@ -14,9 +14,8 @@ class CarrotQuestEventHandlers
 		// Подключение к CarrotQuest
 		if ($CQ->Connect())
 		{
-			// Перехват JS событий
-			
-			// Событие добавления в корзину
+			// Перехват события добавления в корзину
+			// Информацию в Cookie записывает событие php OnBasketAdd (вывести там JS нельзя).
 			if (COption::GetOptionString("carrotquest","cqTrackCartAdd")) {
 			?>	<script>
 					BX.addCustomEvent(window, "OnBasketChange", function () {
@@ -48,23 +47,20 @@ class CarrotQuestEventHandlers
 		{
 			echo '<script>console.log("'.$CQ->Error.'");</script>';
 		}
-		
-		
-        // Результат
+
         return true;
     }
 	
 	static function OnBasketAdd($ID, $arFields)
 	{ 
 		// В идеале все события весятся здесь. Но на практике здесь нельзя выполнить js. И все грусть печаль.
-		// Поэтому рассчет на тоа, что сначала в компоненте срабатывает этот обработчик и устанавливает кук добавленного товара.
-		// Затем срабатывает JS событие, на котором висит обработчик, который использует этот кук
+		// Поэтому рассчет на то, что сначала в компоненте срабатывает этот обработчик и устанавливает кук добавленного товара.
+		// Затем срабатывает JS событие, на котором висит обработчик и использует этот кук
 		$arFields['ADDED_LIST_ID'] = $ID;
 		setcookie("cqAddBasketProduct",json_encode($arFields));
 		return true;
     }
 	
-
 	static function OnBeforeOrderAddHandler($ID, $arFields)
 	{
 		/*  Нам необходимо переопределить стоимость с учетом скидки Carrotquest. 
@@ -76,8 +72,6 @@ class CarrotQuestEventHandlers
 			CSaleOrder::Update($ID, $arFields);
 		}
 		
-		
-		// Результат
         return true;
     }
 	
@@ -92,6 +86,9 @@ class CarrotQuestEventHandlers
 		return true;
 	}
 	
+	/* Если обновились сторонние модули template-ы которых использует carrotquest,
+	*  этот метод копирует необходимые новые template-ы и встраивает в них carrotquest.
+	*/
 	static function OnUpdateInstalled ($array)
 	{
 		if (in_array("sale", $array["arSuccessModules"]))
@@ -100,6 +97,7 @@ class CarrotQuestEventHandlers
 			CarrotQuestEventHandlers::LoadCatalogModuleTemplates();
 	}
 	
+	// Вызывается методом OnUpdateInstalled
 	static function LoadSaleModuleTemplates ()
 	{
 		// Корзина
@@ -116,7 +114,13 @@ class CarrotQuestEventHandlers
 		"<?} ?>".
 		"<!-- CarrotQuest Basket Visit Event End -->",FILE_APPEND);
 		
-		//!! TODO пока не работает. Если буду делать - то надо допилить put_contents в части Discount
+		/** !! TODO пока не работает. Если буду делать - то надо допилить put_contents в части Discount
+		* Но вероятно не буду вообще. 
+		* В отличие от других шаблонов, в данном много изменений carrotquest и их сложно вставить исключительно в конец файла шаблона.
+		* Недостаток - при обновлении компонента sale.order.ajax наш template не будет обновлен.
+		* Плюс - не зависит от изменения кода шаблона при обновлении
+		*/
+		
 		// Предзаказ
 		/*CopyDirFiles(
 			$_SERVER["DOCUMENT_ROOT"]."/bitrix/components/bitrix/sale.order.ajax/templates/.default/", 
@@ -148,6 +152,7 @@ class CarrotQuestEventHandlers
 		,FILE_APPEND);*/
 	}
 	
+	// Вызывается методом OnUpdateInstalled
 	static function LoadCatalogModuleTemplates ()
 	{
 		CopyDirFiles(

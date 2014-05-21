@@ -1,6 +1,8 @@
 <?
+// Параметры приложения по-умолчанию
+
 $carrotquest_default_option = array(
-		"cqApiKey"				=>	"",
+		"cqApiKey"				=> "",
 		"cqSecretKey"			=> "",
 		"cqTrackCartAdd"		=> "checked",
 		"cqTrackCartVisit"		=> "checked",

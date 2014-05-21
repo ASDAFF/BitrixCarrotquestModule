@@ -385,6 +385,7 @@ $bShowNameWithPicture = ($bDefaultColumns) ? true : false; // flat to show name 
 						</tr>
 						<?
 					}
+					/* Поле, выводящее скидку CarrotQuest */
 					if (doubleval($arResult["CARROTQUEST_DISCOUNT_PRICE"]) > 0)
 					{
 						?>
@@ -396,6 +397,7 @@ $bShowNameWithPicture = ($bDefaultColumns) ? true : false; // flat to show name 
 						</tr>
 						<?
 					}
+					/* Конец кода CarrotQuest */
 					if(!empty($arResult["TAX_LIST"]))
 					{
 						foreach($arResult["TAX_LIST"] as $val)

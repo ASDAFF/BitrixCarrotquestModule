@@ -14,4 +14,5 @@
 	$MESS['OPTIONS_ACTIVATE_BONUS'] = 'Включить бонусную систему';
 	$MESS['OPTIONS_ADMIN_LINK'] = 'Переход в административную панель Carrot quest';
 	$MESS['OPTIONS_ADMIN_LINK_NAME'] = 'Перейти';
+	$MESS['OPTIONS_CARROTQUEST_ADMIN'] = 'Административная панель Carrot quest';
 ?>

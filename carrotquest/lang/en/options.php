@@ -14,4 +14,5 @@
 	$MESS['OPTIONS_ACTIVATE_BONUS'] = 'Activate bonus system';
 	$MESS['OPTIONS_ADMIN_LINK'] = 'Link to Carrot quest admin panel';
 	$MESS['OPTIONS_ADMIN_LINK_NAME'] = 'Go';
+	$MESS['OPTIONS_CARROTQUEST_ADMIN'] = 'Carrot quest administrator panel';
 ?>

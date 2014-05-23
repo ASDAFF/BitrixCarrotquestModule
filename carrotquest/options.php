@@ -108,6 +108,10 @@
 			<input type="checkbox" name="ActivateBonus" id="ActivateBonusBox" <?= COption::GetOptionString("carrotquest","cqActivateBonus") ?> />
         </td>
     </tr>
+	<!-- Ссылка на админку Carrot quest -->
+	<tr class="heading">
+		<td colspan="2"><? echo GetMessage("OPTIONS_CARROTQUEST_ADMIN"); ?></td>
+	</tr>
 	<tr>
 		<td width="50%" valign="center"><label for="AdminLink"><?= GetMessage('OPTIONS_ADMIN_LINK'); ?>:</td>
         <td  valign="top">

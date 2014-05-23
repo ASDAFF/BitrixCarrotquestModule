@@ -31,6 +31,14 @@
 				<input type="text" name="ApiSecret" placeholder="API-SECRET">
 			</td>
 		</tr>
+		<tr>
+			<td>
+				<?= GetMessage('CARROTQUEST_INSTALL_NO_KEY') ?>:
+			</td>
+			<td>
+				<a href="http://carrotquest.ru" target="_blank"><?= GetMessage('CARROTQUEST_INSTALL_NO_KEY_LINK_NAME') ?></a>
+			</td>
+		</tr>
 	</table>
 	<input type="submit" name="inst" value="<?echo GetMessage("MOD_INSTALL")?>">
 <form>

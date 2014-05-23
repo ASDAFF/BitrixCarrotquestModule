@@ -6,16 +6,35 @@ class CarrotQuestApi
 	public static $MODULE_ID = "carrotquest";
 	public $Error = false; // Сюда запишется ошибка, если такая произойдет
     private $AuthToken; // Токен для отсылки данных с сервера api.API-KEY.API-SECRET
+	private $UID = null; // Идентификатор пользователя в Carrotquest
 	
 	function __construct()
     {
         if (COption::GetOptionString("carrotquest", 'cqApiKey') != "" && COption::GetOptionString("carrotquest", 'cqApiSecret') != "")
             $this->AuthToken = 'app.' . COption::GetOptionString("carrotquest", 'cqApiKey') . '.' . COption::GetOptionString("carrotquest", 'cqApiSecret');
+		if (array_key_exists('carrotquest_uid', $_COOKIE))
+			$this->UID = $_COOKIE['carrotquest_uid'];
+			
     }
 	
 	/* Выполняет подключение к carrotquest. JS объект carrotquest уже должен быть инициализирован.
 	*  Если пользователь залогинен, шлет идентификационные данные carrotquest.
 	*/
+	
+	/*public function tryKeys ($ApiKey, $ApiSecret)
+	{
+		// Вообще я думаю это надо сделать.
+		$data = array(
+			"event"			=> 'TryKeys',
+			"app"			=> '$self_app',
+			"user"			=> $this->UID
+		);
+		
+		$url = "http://api.carrotquest.io/v1/events?auth_token=".$ApiKey.'.'.$ApiSecret;
+        $answer = $this->HttpPost($url, $data);
+		$answer = json_decode($answer, true);
+		return $answer;
+	}*/
 	
 	public static function Connect ()
 	{
@@ -51,6 +70,20 @@ class CarrotQuestApi
 			return false;
 		}
 		return true;
+	}
+	
+	public function track ($event)
+	{
+		$data = array(
+			"event"			=> $event,
+			"app"			=> '$self_app',
+			"user"			=> $this->UID
+		);
+		
+		$url = "http://api.carrotquest.io/v1/events?auth_token=".$this->AuthToken;
+        $answer = $this->HttpPost($url, $data);
+		$answer = json_decode($answer, true);
+		return $answer;
 	}
 	
 	// Отправка любой информации запросом POST
@@ -103,7 +136,7 @@ class CarrotQuestApi
 	public function GetSelectedCarrots ()
 	{
 		$data = array();
-		$url = "http://api.carrotquest.io/v1/users/".$_COOKIE['carrotquest_uid'].'/carrots/$self_app?auth_token='.$this->AuthToken;
+		$url = "http://api.carrotquest.io/v1/users/".$this->UID.'/carrots/$self_app?auth_token='.$this->AuthToken;
         $answer = $this->HttpGet($url, $data);
 		$answer = json_decode($answer, true);
 		return $answer["data"];
@@ -117,12 +150,11 @@ class CarrotQuestApi
 			"items" 		=> $_COOKIE['CQBasketItems'],
 			"appOrderId"	=> $ID,
 			"app"			=> '$self_app',
-			"user"			=> $_COOKIE['carrotquest_uid']
+			"user"			=> $this->UID,
 		);
 		
 		$url = "http://api.carrotquest.io/v1/orders?auth_token=".$this->AuthToken;
         $answer = $this->HttpPost($url, $data);
-		RewriteFile($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/carrotquest/tmp.txt", $answer);
 		$answer = json_decode($answer, true);
 		return $answer;
     }

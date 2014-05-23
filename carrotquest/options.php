@@ -108,6 +108,12 @@
 			<input type="checkbox" name="ActivateBonus" id="ActivateBonusBox" <?= COption::GetOptionString("carrotquest","cqActivateBonus") ?> />
         </td>
     </tr>
+	<tr>
+		<td width="50%" valign="center"><label for="AdminLink"><?= GetMessage('OPTIONS_ADMIN_LINK'); ?>:</td>
+        <td  valign="top">
+			<a id="AdminLink" href="http://carrotquest.io/panel/#/login" target="_blank"><?= GetMessage('OPTIONS_ADMIN_LINK_NAME') ?></a>
+        </td>
+	</tr>
 	<?$oTabControl->BeginNextTab();?>
 	
     <?$oTabControl->Buttons();?>

@@ -4,7 +4,10 @@ $strPath2Lang = str_replace("\\", "/", __FILE__);
 $strPath2Lang = substr($strPath2Lang, 0, strlen($strPath2Lang)-18);
 include(GetLangFileName($strPath2Lang."/lang/", "/install/index.php"));
 CModule::IncludeModule('sale');
-include($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/carrotquest/classes/general/CarrotQuestEventHandlers.php");
+require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/carrotquest/classes/general/CarrotQuestEventHandlers.php");
+require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/carrotquest/classes/general/CarrotQuestApi.php");
+
+$CQ = new CarrotQuestApi();
 
 class carrotquest extends CModule
 {
@@ -67,9 +70,11 @@ class carrotquest extends CModule
 	
 	function DoUninstall()
 	{
-		global $DOCUMENT_ROOT, $APPLICATION;
-                
-			
+		global $DOCUMENT_ROOT, $APPLICATION, $CQ;
+		
+        COption::RemoveOption("cqApiKey");
+		COption::RemoveOption("cqApiSecret");
+		
 		$this->UnInstallFiles();
 		$this->UnInstallDB();
 		$this->UnInstallEvents();

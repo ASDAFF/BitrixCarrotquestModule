@@ -1,4 +1,5 @@
 <?
+	require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/carrotquest/include.php");
 	if(!check_bitrix_sessid())
 		return;
 	IncludeModuleLangFile(__FILE__);
@@ -13,7 +14,14 @@
 			COption::RemoveOption("carrotquest", "cqApiKey");
 		if (COption::GetOptionString("carrotquest","cqApiSecret"))
 			COption::RemoveOption("carrotquest", "cqApiSecret");
-			
+		
+		// Трекаем неуспешную установку модуля
+		global $CQ;
+		$CQ->Connect();
+		?>
+			<script>carrotquest.track('FailInstallBitrixModule');</script>
+		<?
+		
 		// Показываем ошибку
 		echo CAdminMessage::ShowMessage(Array("TYPE"=>"ERROR", "MESSAGE" =>GetMessage("MOD_INST_ERR"), "DETAILS"=>GetMessage("CARROTQUEST_KEY_ERROR"), "HTML"=>true));
 	}
@@ -22,6 +30,13 @@
 		// Пишем ключ в параметры модуля
 		COption::SetOptionString("carrotquest","cqApiKey",$_REQUEST['ApiKey']);
 		COption::SetOptionString("carrotquest","cqApiSecret",$_REQUEST['ApiSecret']);
+		
+		// Трекаем успешную установку модуля
+		global $CQ;
+		$CQ->Connect();
+		?>
+			<script>carrotquest.track('SuccessfullInstallBitrixModule');</script>
+		<?
 		
 		// Модуль регистрирую тут, поскольку так и не понял, как в index.php отловить некорректное завершение step2.
 		RegisterModule("carrotquest");

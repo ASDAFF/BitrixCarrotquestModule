@@ -1,4 +1,20 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();?>
+
+<!-- Carrot quest Track Order -->
+<? if (COption::GetOptionString('carrotquest', 'cqActivateBonus')) { ?>
+<script>
+	var items = Cookie.get('CQBasketItems');
+	var orderID = Cookie.get('CQOrderId');
+	if (items && orderID) // надо трекать заказ
+	{
+		carrotquest.trackOrder(JSON.parse(items), orderID);
+		Cookie.delete('CQBasketItems');
+		Cookie.delete('CQOrderId');
+	}
+</script>
+<? } ?>
+<!-- Carrot quest Track Order End-->
+
 <?
 if (!empty($arResult["ORDER"]))
 {

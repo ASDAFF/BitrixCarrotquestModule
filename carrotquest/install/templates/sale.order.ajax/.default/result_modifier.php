@@ -63,7 +63,7 @@
 	$arResult = CalcDiscount($arResult);
 	
 	// При оформлении заказ недоступны item-ы этого заказа. Запишем их в куки.
-	if (COption::GetOptionString('carrotquest','cqTrackOrderConfirm') != '')
+	if (COption::GetOptionString('carrotquest','cqTrackOrderConfirm') != '' && (!array_key_exists('CQBasketItems',$_COOKIE) || $_COOKIE['CQBasketItems'] == '')
 	{
 		$cookie = array();
 		foreach ($arResult['BASKET_ITEMS'] as $value)

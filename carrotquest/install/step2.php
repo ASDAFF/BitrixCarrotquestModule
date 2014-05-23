@@ -15,13 +15,6 @@
 		if (COption::GetOptionString("carrotquest","cqApiSecret"))
 			COption::RemoveOption("carrotquest", "cqApiSecret");
 		
-		// Трекаем неуспешную установку модуля
-		global $CQ;
-		$CQ->Connect();
-		?>
-			<script>carrotquest.track('FailInstallBitrixModule');</script>
-		<?
-		
 		// Показываем ошибку
 		echo CAdminMessage::ShowMessage(Array("TYPE"=>"ERROR", "MESSAGE" =>GetMessage("MOD_INST_ERR"), "DETAILS"=>GetMessage("CARROTQUEST_KEY_ERROR"), "HTML"=>true));
 	}

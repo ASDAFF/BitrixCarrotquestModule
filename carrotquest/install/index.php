@@ -7,8 +7,6 @@ CModule::IncludeModule('sale');
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/carrotquest/classes/general/CarrotQuestEventHandlers.php");
 require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/carrotquest/classes/general/CarrotQuestApi.php");
 
-$CQ = new CarrotQuestApi();
-
 class carrotquest extends CModule
 {
 	var $MODULE_ID = "carrotquest";
@@ -71,7 +69,7 @@ class carrotquest extends CModule
 	function DoUninstall()
 	{
 		global $DOCUMENT_ROOT, $APPLICATION, $CQ;
-		
+
         COption::RemoveOption("cqApiKey");
 		COption::RemoveOption("cqApiSecret");
 		

@@ -1,4 +1,4 @@
-<?
+﻿<?
 	$MESS['OPTIONS_BUTTON_SAVE']  = 'Сохранить';
 	$MESS['OPTIONS_BUTTON_RESET'] = 'Сбросить';
 	$MESS['OPTIONS_API_KEY_DESCRIPTION'] = 'Ваш публичный ключ Carrot quest (API-KEY)';

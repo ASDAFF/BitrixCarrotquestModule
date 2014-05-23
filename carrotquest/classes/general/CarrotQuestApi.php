@@ -38,6 +38,7 @@ class CarrotQuestApi
 	
 	public static function Connect ()
 	{
+		// В header-е уже должен быть инициализирован carrotquest (в js)
 		$ApiKey = COption::GetOptionString("carrotquest","cqApiKey");
 		if ($ApiKey)
 		{?>
@@ -66,7 +67,6 @@ class CarrotQuestApi
 		}
 		else
 		{
-			$this->Error = "Connect failed: API-KEY not found!";
 			return false;
 		}
 		return true;
@@ -145,17 +145,28 @@ class CarrotQuestApi
 	// Отправка события о заказе
 	public function OrderConfirm ($ID, $arFields)
     {
-		// Делаю через сервер, чтоб не было проблем с безопасностью бонусов.
-		$data = array(
-			"items" 		=> $_COOKIE['CQBasketItems'],
-			"appOrderId"	=> $ID,
-			"app"			=> '$self_app',
-			"user"			=> $this->UID,
-		);
-		
-		$url = "http://api.carrotquest.io/v1/orders?auth_token=".$this->AuthToken;
-        $answer = $this->HttpPost($url, $data);
-		$answer = json_decode($answer, true);
-		return $answer;
+		// Чисто тестовый вывод
+		// RewriteFile('c:\Bitrix\www\bitrix\modules\carrotquest\tmp.txt',json_encode($data));
+		if (COption::GetOptionString('carrotquest','cqActivateBonus') == "checked")
+		{
+			// Делаю через сервер, чтоб не было проблем с безопасностью бонусов.
+			$data = array(
+				"items" 		=> $_COOKIE['CQBasketItems'],
+				"appOrderId"	=> $ID,
+				"app"			=> '$self_app',
+				"user"			=> $this->UID,
+			);
+			setcookie('CQBasketItems','');
+			setcookie('CQOrderId', '');
+			
+			$url = "http://api.carrotquest.io/v1/orders?auth_token=".$this->AuthToken;
+			$answer = $this->HttpPost($url, $data);
+			$answer = json_decode($answer, true);
+			return $answer;
+		}
+		else {
+			// Остался кук CQBasketItems, мы его поймаем при загрузке страницы заказа в js
+			setcookie('CQOrderId', $ID);
+		}
     }
 }

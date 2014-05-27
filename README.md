@@ -1,4 +1,7 @@
-Модуль bitrix для carrotquest. Установка:
+Модуль bitrix для carrotquest. 
+carrotquest - модуль в исходном виде.
+carrotquest.analytics - подготовленный для загрузки в Marketplace.
+Установка:
 1) Установить сайт (Битрикс управление сайтом + веб окружение) http://www.1c-bitrix.ru/download/cms.php
 2) Поместить в папку /bitrix/www/bitrix/modules
 3) Зайти за админа и перейти в администрирование сайта

@@ -4,6 +4,7 @@
 	$MESS ['CARROTQUEST_INSTALL_TITLE'] = "Установка модуля Carrot quest";
 	$MESS ['CARROTQUEST_UNINSTALL_TITLE'] = "Удаление модуля Carrot quest";
 	$MESS ['CARROTQUEST_KEY_ERROR'] = "Введены неверные ключи.";
+	$MESS ['CARROTQUEST_DEPENDENCES_ERROR'] = 'Для работы модуля необходимы модули "Торговый каталог (catalog)" и "Интернет-магазин (sale)"';
 	$MESS ['CARROTQUEST_INSTALL_ENTER_API_KEY'] = "Пожалуйста, введите ваш публичный ключ (API-KEY)";
 	$MESS ['CARROTQUEST_INSTALL_ENTER_API_SECRET'] = "Пожалуйста, введите ваш секретный ключ (API-SECRET)";
 	$MESS ['CARROTQUEST_INSTALL_NO_KEY'] = "Не знаете где взять ключи? Необходима помощь по установке?";

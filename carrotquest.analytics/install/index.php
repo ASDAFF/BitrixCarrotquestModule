@@ -1,4 +1,5 @@
 <?
+	
 global $MESS;
 
 $modulePath = str_replace("\\", "/", __FILE__);
@@ -9,8 +10,7 @@ include_once(CARROTQUEST_MODULE_PATH."include.php");
 
 require(GetLangFileName(CARROTQUEST_MODULE_PATH."lang/", "/install/index.php"));
 
-// Необходим интернет магазин и каталог
-if (!IsModuleInstalled('sale') || !IsModuleInstalled('catalog')) die();
+
 
 CModule::IncludeModule('sale');
 
@@ -41,10 +41,8 @@ Class carrotquest_analytics extends CModule
 		}
 		else
 		{
-			$ver = $this->MODULE_ID."_VERSION";
-			$verDate = $this->MODULE_ID."_VERSION_DATE";
-			$this->MODULE_VERSION = $$ver;
-			$this->MODULE_VERSION_DATE = $$verDate;
+			$this->MODULE_VERSION = '1.0.9';
+			$this->MODULE_VERSION_DATE = '28.05.2014';
 		}
 		
 		$this->PARTNER_NAME = "Carrot quest";
@@ -55,7 +53,16 @@ Class carrotquest_analytics extends CModule
 
 	function DoInstall()
 	{
-		global $DOCUMENT_ROOT, $APPLICATION, $step, $obModule;
+		global $DOCUMENT_ROOT, $APPLICATION, $step, $obModule, $errors;
+		
+		$errors = array();
+		// Необходим интернет магазин и каталог
+		if (!IsModuleInstalled('sale') || !IsModuleInstalled('catalog'))
+		{
+			array_push($errors, "CARROTQUEST_DEPENDENCES_ERROR");
+			$APPLICATION->IncludeAdminFile(GetMessage("CARROTQUEST_INSTALL_TITLE"), $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$this->MODULE_ID."/install/step2.php");
+			return;
+		};
 		
 		$step = IntVal($step);
 		$obModule = $this;

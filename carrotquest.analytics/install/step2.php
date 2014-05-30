@@ -7,16 +7,24 @@
 		return;
 		
 	// Проверка ключа на валидность. Можно устроить более серьезную проверку, но пока по внешним признакам.
-	if (!array_key_exists('ApiKey', $_REQUEST) || strlen($_REQUEST['ApiKey'])!=32)
+	
+	if (empty($errors) && (!array_key_exists('ApiKey', $_REQUEST) || !array_key_exists('ApiSecret', $_REQUEST) || strlen($_REQUEST['ApiKey'])!=32 || strlen($_REQUEST['ApiSecret'])!=64))
+		array_push($errors, "CARROTQUEST_KEY_ERROR");
+
+	if (!empty($errors))
 	{
-		// Если ключ неверен, то уничтожаем уже существующий в настройках ключ.
+		// Стереть ключи
 		if (COption::GetOptionString(CARROTQUEST_MODULE_ID,"cqApiKey"))
 			COption::RemoveOption(CARROTQUEST_MODULE_ID, "cqApiKey");
 		if (COption::GetOptionString(CARROTQUEST_MODULE_ID,"cqApiSecret"))
 			COption::RemoveOption(CARROTQUEST_MODULE_ID, "cqApiSecret");
-		
+			
 		// Показываем ошибку
-		echo CAdminMessage::ShowMessage(Array("TYPE"=>"ERROR", "MESSAGE" =>GetMessage("MOD_INST_ERR"), "DETAILS"=>GetMessage("CARROTQUEST_KEY_ERROR"), "HTML"=>true));
+		$message = '';
+		foreach($errors as $value)
+			$message .= GetMessage($value)."<br>";
+
+		echo CAdminMessage::ShowMessage(Array("TYPE"=>"ERROR", "MESSAGE" =>GetMessage("MOD_INST_ERR"), "DETAILS"=>$message, "HTML"=>true));
 	}
 	else
 	{

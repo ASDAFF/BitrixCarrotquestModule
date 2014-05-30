@@ -4,6 +4,7 @@
 	$MESS ['CARROTQUEST_INSTALL_TITLE'] = "Install Carrot quest module";
 	$MESS ['CARROTQUEST_UNINSTALL_TITLE'] = "Uninstall Carrot quest module";
 	$MESS ['CARROTQUEST_KEY_ERROR'] = "Invalid keys for Carrot quest module.";
+	$MESS ['CARROTQUEST_DEPENDENCES_ERROR'] = '"Commercial Catalog (catalog)" and "e-Store (sale)" modules are required.';
 	$MESS ['CARROTQUEST_INSTALL_ENTER_API_KEY'] = "Enter your public key (API-KEY), please";
 	$MESS ['CARROTQUEST_INSTALL_ENTER_API_SECRET'] = "Enter your secret key (API-SECRET), please";
 	$MESS ['CARROTQUEST_INSTALL_NO_KEY'] = "No keys or need help with installation?";

@@ -1,3 +1,4 @@
-Модуль bitrix для carrotquest. 
-carrotquest - модуль в исходном виде.
-carrotquest.analytics - подготовленный для загрузки в Marketplace.
+п»їРњРѕРґСѓР»СЊ bitrix РґР»СЏ carrotquest. 
+carrotquest - РјРѕРґСѓР»СЊ РІ РёСЃС…РѕРґРЅРѕРј РІРёРґРµ.
+carrotquest.analytics - РїРѕРґРіРѕС‚РѕРІР»РµРЅРЅС‹Р№ РґР»СЏ Р·Р°РіСЂСѓР·РєРё РІ Marketplace.
+[РЈСЃС‚Р°РЅРѕРІРєР°] (https://github.com/M1hacka/BitrixCarrotquestModule/blob/master/docs/install.md)

@@ -1,12 +1,12 @@
 # Техническое описание модуля Carrot Quest для Bitrix
 
 ## Оглавление
-1. Установка [install]
-2. Компоненты [components]
-* Опции [options.php]
-* Файл установки/параметров [index.php]
-* Класс взаимодействия с API carrotquest [CarrotQuestApi.php]
-* Класс обработчиков событий Bitrix [CarrotQuestEventHandlers.php]
+1. [Установка][install]
+2. [Компоненты][components]
+* [Опции]]options.php]
+* [Файл установки/параметров][index.php]
+* [Класс взаимодействия с API carrotquest][CarrotQuestApi.php]
+* [Класс обработчиков событий Bitrix][CarrotQuestEventHandlers.php]
 
 ## [Установка]: Установка
 В дальнейшем будет установка из Marketplace. То, что есть на текущий момент - [здесь](https://github.com/M1hacka/BitrixCarrotquestModule/blob/master/docs/install.md).

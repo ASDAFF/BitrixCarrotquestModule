@@ -1,22 +1,22 @@
 # Техническое описание модуля Carrot Quest для Bitrix
 
 ## Оглавление
-1. [Установка][install]
-2. [Компоненты][components]
-* [Опции]]options.php]
-* [Файл установки/параметров][index.php]
-* [Класс взаимодействия с API carrotquest][CarrotQuestApi.php]
-* [Класс обработчиков событий Bitrix][CarrotQuestEventHandlers.php]
+1. [Установка] [install]
+2. [Компоненты] [components]
+* [Опции] [options]
+* [Файл установки/параметров] [index]
+* [Класс взаимодействия с API carrotquest] [CarrotQuestApi]
+* [Класс обработчиков событий Bitrix] [CarrotQuestEventHandlers]
 
 ## [Установка]: Установка
 В дальнейшем будет установка из Marketplace. То, что есть на текущий момент - [здесь](https://github.com/M1hacka/BitrixCarrotquestModule/blob/master/docs/install.md).
 
 ## [components]: Составные части
-### [options.php]: Файл options.php  
+### [options]: Файл options.php  
 Описывает то, что отображается в админке в настройках модуля (Администрирование -> Настройки -> Настройки модулей -> Carrot quest). На текущий момент это настройки ключей, включение/отключение трекинга событий и включение/отключение бонусной системы.
 ### [index.php]: Файл index.php  
 Описывает действия при установке и деинсталляции модулей. Имя класса должно совпадать с именем модуля (за исключением того, что точка заменяется на подчеркивание)
-### [CarrotQuestApi.php]: Файл /classes/general/CarrotQuestApi.php  
+### [CarrotQuestApi]: Файл /classes/general/CarrotQuestApi.php  
 Содержит класс со всеми функциями взаимодействия с Carrot quest. Обязательно должен быть создан перед использованием функций.
 * **Connect** - подключает через js-API к CarrotQuest + отсылает идентификационные данные, если они есть.
 * **Track** - Отслеживанbt событий со стороны сервера. Лучше не использовать, заменяя альтернативным вызовом jsAPI в нужном месте.
@@ -26,5 +26,5 @@
 - *CQBasketItems* - массив содержимого корзины
 - *CQOrderId* - ID созданного заказа.
 Оба кука создаются в файле result_modifier.php переопределенного шаблона заказа из модуля sale.order.ajax
-### [CarrotQuestEventHandlers.php]:  Файл /classes/general/CarrotQuestEventHandlers.php  
+### [CarrotQuestEventHandlers]:  Файл /classes/general/CarrotQuestEventHandlers.php  
 Обработчики всех событий, которые перехватывает система. Все методы статические.

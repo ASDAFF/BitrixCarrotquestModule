@@ -1,12 +1,12 @@
 <?
 	$MESS ['CARROTQUEST_MODULE_NAME'] = "Carrot quest";
-	$MESS ['CARROTQUEST_MODULE_DESCRIPTION'] = "ÐœÐ¾Ð´ÑƒÐ»ÑŒ Ð´Ð»Ñ ÑÐ±Ð¾Ñ€Ð° ÑÑ‚Ð°Ñ‚Ð¸ÑÑ‚Ð¸ÐºÐ¸ Ð¸ Ð¿Ð¾Ð²Ñ‹ÑˆÐµÐ½Ð¸Ñ ÐºÐ¾Ð½Ð²ÐµÑ€ÑÐ¸Ð¸ ÑÐ°Ð¹Ñ‚Ð°.";
-	$MESS ['CARROTQUEST_INSTALL_TITLE'] = "Ð£ÑÑ‚Ð°Ð½Ð¾Ð²ÐºÐ° Ð¼Ð¾Ð´ÑƒÐ»Ñ Carrot quest";
-	$MESS ['CARROTQUEST_UNINSTALL_TITLE'] = "Ð£Ð´Ð°Ð»ÐµÐ½Ð¸Ðµ Ð¼Ð¾Ð´ÑƒÐ»Ñ Carrot quest";
-	$MESS ['CARROTQUEST_KEY_ERROR'] = "Ð’Ð²ÐµÐ´ÐµÐ½Ñ‹ Ð½ÐµÐ²ÐµÑ€Ð½Ñ‹Ðµ ÐºÐ»ÑŽÑ‡Ð¸.";
-	$MESS ['CARROTQUEST_DEPENDENCES_ERROR'] = 'Ð”Ð»Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Ð¼Ð¾Ð´ÑƒÐ»Ñ Ð½ÐµÐ¾Ð±Ñ…Ð¾Ð´Ð¸Ð¼Ñ‹ Ð¼Ð¾Ð´ÑƒÐ»Ð¸ "Ð¢Ð¾Ñ€Ð³Ð¾Ð²Ñ‹Ð¹ ÐºÐ°Ñ‚Ð°Ð»Ð¾Ð³ (catalog)" Ð¸ "Ð˜Ð½Ñ‚ÐµÑ€Ð½ÐµÑ‚-Ð¼Ð°Ð³Ð°Ð·Ð¸Ð½ (sale)"';
-	$MESS ['CARROTQUEST_INSTALL_ENTER_API_KEY'] = "ÐŸÐ¾Ð¶Ð°Ð»ÑƒÐ¹ÑÑ‚Ð°, Ð²Ð²ÐµÐ´Ð¸Ñ‚Ðµ Ð²Ð°Ñˆ Ð¿ÑƒÐ±Ð»Ð¸Ñ‡Ð½Ñ‹Ð¹ ÐºÐ»ÑŽÑ‡ (API-KEY)";
-	$MESS ['CARROTQUEST_INSTALL_ENTER_API_SECRET'] = "ÐŸÐ¾Ð¶Ð°Ð»ÑƒÐ¹ÑÑ‚Ð°, Ð²Ð²ÐµÐ´Ð¸Ñ‚Ðµ Ð²Ð°Ñˆ ÑÐµÐºÑ€ÐµÑ‚Ð½Ñ‹Ð¹ ÐºÐ»ÑŽÑ‡ (API-SECRET)";
-	$MESS ['CARROTQUEST_INSTALL_NO_KEY'] = "ÐÐµ Ð·Ð½Ð°ÐµÑ‚Ðµ Ð³Ð´Ðµ Ð²Ð·ÑÑ‚ÑŒ ÐºÐ»ÑŽÑ‡Ð¸? ÐÐµÐ¾Ð±Ñ…Ð¾Ð´Ð¸Ð¼Ð° Ð¿Ð¾Ð¼Ð¾Ñ‰ÑŒ Ð¿Ð¾ ÑƒÑÑ‚Ð°Ð½Ð¾Ð²ÐºÐµ?";
-	$MESS ['CARROTQUEST_INSTALL_NO_KEY_LINK_NAME'] = "ÐŸÐµÑ€ÐµÐ¹Ñ‚Ð¸ Ð½Ð° ÑÐ°Ð¹Ñ‚ Carrot quest";
+	$MESS ['CARROTQUEST_MODULE_DESCRIPTION'] = "Ìîäóëü äëÿ ñáîðà ñòàòèñòèêè è ïîâûøåíèÿ êîíâåðñèè ñàéòà.";
+	$MESS ['CARROTQUEST_INSTALL_TITLE'] = "Óñòàíîâêà ìîäóëÿ Carrot quest";
+	$MESS ['CARROTQUEST_UNINSTALL_TITLE'] = "Óäàëåíèå ìîäóëÿ Carrot quest";
+	$MESS ['CARROTQUEST_KEY_ERROR'] = "Ââåäåíû íåâåðíûå êëþ÷è.";
+	$MESS ['CARROTQUEST_DEPENDENCES_ERROR'] = 'Äëÿ ðàáîòû ìîäóëÿ íåîáõîäèìû ìîäóëè "Òîðãîâûé êàòàëîã (catalog)" è "Èíòåðíåò-ìàãàçèí (sale)"';
+	$MESS ['CARROTQUEST_INSTALL_ENTER_API_KEY'] = "Ïîæàëóéñòà, ââåäèòå âàø ïóáëè÷íûé êëþ÷ (API-KEY)";
+	$MESS ['CARROTQUEST_INSTALL_ENTER_API_SECRET'] = "Ïîæàëóéñòà, ââåäèòå âàø ñåêðåòíûé êëþ÷ (API-SECRET)";
+	$MESS ['CARROTQUEST_INSTALL_NO_KEY'] = "Íå çíàåòå ãäå âçÿòü êëþ÷è? Íåîáõîäèìà ïîìîùü ïî óñòàíîâêå?";
+	$MESS ['CARROTQUEST_INSTALL_NO_KEY_LINK_NAME'] = "Ïåðåéòè íà ñàéò Carrot quest";
 ?>

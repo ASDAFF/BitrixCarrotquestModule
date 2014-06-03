@@ -1,3 +1,3 @@
 <?
-$MESS ['CARROTQUEST_MODULE_TITLE'] = "ÐœÐ¾Ð´ÑƒÐ»ÑŒ Carrot quest";
+$MESS ['CARROTQUEST_MODULE_TITLE'] = "Ìîäóëü Carrot quest";
 ?>

@@ -1,18 +1,18 @@
-ï»¿<?
-	$MESS['OPTIONS_BUTTON_SAVE']  = 'Ð¡Ð¾Ñ…Ñ€Ð°Ð½Ð¸Ñ‚ÑŒ';
-	$MESS['OPTIONS_BUTTON_RESET'] = 'Ð¡Ð±Ñ€Ð¾ÑÐ¸Ñ‚ÑŒ';
-	$MESS['OPTIONS_API_KEY_DESCRIPTION'] = 'Ð’Ð°Ñˆ Ð¿ÑƒÐ±Ð»Ð¸Ñ‡Ð½Ñ‹Ð¹ ÐºÐ»ÑŽÑ‡ Carrot quest (API-KEY)';
-	$MESS['OPTIONS_SECRET_KEY_DESCRIPTION'] = 'Ð’Ð°Ñˆ ÑÐµÐºÑ€ÐµÑ‚Ð½Ñ‹Ð¹ ÐºÐ»ÑŽÑ‡ Carrot quest (API-SECRET)';
-	$MESS['OPTIONS_TRACK_CART_ADD'] = 'ÐžÑ‚ÑÐ»ÐµÐ¶Ð¸Ð²Ð°Ñ‚ÑŒ ÑÐ¾Ð±Ñ‹Ñ‚Ð¸Ðµ Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½Ð¸Ñ Ð² ÐºÐ¾Ñ€Ð·Ð¸Ð½Ñƒ';
-	$MESS['OPTIONS_TRACK_CART_VISIT'] = 'ÐžÑ‚ÑÐ»ÐµÐ¶Ð¸Ð²Ð°Ñ‚ÑŒ ÑÐ¾Ð±Ñ‹Ñ‚Ð¸Ðµ Ð¿Ð¾ÑÐµÑ‰ÐµÐ½Ð¸Ñ ÐºÐ¾Ñ€Ð·Ð¸Ð½Ñ‹';
-	$MESS['OPTIONS_TRACK_CART_PRE_ORDER'] = 'ÐžÑ‚ÑÐ»ÐµÐ¶Ð¸Ð²Ð°Ñ‚ÑŒ ÑÐ¾Ð±Ñ‹Ñ‚Ð¸Ðµ Ð¿Ñ€ÐµÐ´Ð·Ð°ÐºÐ°Ð·Ð°';
-	$MESS['OPTIONS_TRACK_PRODUCT_DETAILES'] = 'ÐžÑ‚ÑÐ»ÐµÐ¶Ð¸Ð²Ð°Ñ‚ÑŒ ÑÐ¾Ð±Ñ‹Ñ‚Ð¸Ðµ Ð¾Ñ‚ÐºÑ€Ñ‹Ñ‚Ð¸Ñ Ð´ÐµÑ‚Ð°Ð»ÑŒÐ½Ð¾Ð³Ð¾ Ð¾Ð¿Ð¸ÑÐ°Ð½Ð¸Ñ Ñ‚Ð¾Ð²Ð°Ñ€Ð°';
-	$MESS['OPTIONS_TRACK_ORDER_CONFIRM'] = 'ÐžÑ‚ÑÐ»ÐµÐ¶Ð¸Ð²Ð°Ñ‚ÑŒ ÑÐ¾Ð±Ñ‹Ñ‚Ð¸Ðµ Ð¿Ð¾Ð´Ñ‚Ð²ÐµÑ€Ð¶Ð´ÐµÐ½Ð¸Ñ (Ð¾Ñ„Ð¾Ñ€Ð¼Ð»ÐµÐ½Ð¸Ñ) Ð·Ð°ÐºÐ°Ð·Ð°';
-	$MESS['OPTIONS_KEYS'] = 'ÐÐ°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ¸ ÐºÐ»ÑŽÑ‡ÐµÐ¹';
-	$MESS['OPTIONS_EVENTS'] = 'ÐÐ°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ¸ ÑÐ¾Ð±Ñ‹Ñ‚Ð¸Ð¹';
-	$MESS['OPTIONS_BONUS'] = 'ÐÐ°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ¸ Ð±Ð¾Ð½ÑƒÑÐ½Ð¾Ð¹ ÑÐ¸ÑÑ‚ÐµÐ¼Ñ‹';
-	$MESS['OPTIONS_ACTIVATE_BONUS'] = 'Ð’ÐºÐ»ÑŽÑ‡Ð¸Ñ‚ÑŒ Ð±Ð¾Ð½ÑƒÑÐ½ÑƒÑŽ ÑÐ¸ÑÑ‚ÐµÐ¼Ñƒ';
-	$MESS['OPTIONS_ADMIN_LINK'] = 'ÐŸÐµÑ€ÐµÑ…Ð¾Ð´ Ð² Ð°Ð´Ð¼Ð¸Ð½Ð¸ÑÑ‚Ñ€Ð°Ñ‚Ð¸Ð²Ð½ÑƒÑŽ Ð¿Ð°Ð½ÐµÐ»ÑŒ Carrot quest';
-	$MESS['OPTIONS_ADMIN_LINK_NAME'] = 'ÐŸÐµÑ€ÐµÐ¹Ñ‚Ð¸';
-	$MESS['OPTIONS_CARROTQUEST_ADMIN'] = 'ÐÐ´Ð¼Ð¸Ð½Ð¸ÑÑ‚Ñ€Ð°Ñ‚Ð¸Ð²Ð½Ð°Ñ Ð¿Ð°Ð½ÐµÐ»ÑŒ Carrot quest';
+<?
+	$MESS['OPTIONS_BUTTON_SAVE']  = 'Ñîõðàíèòü';
+	$MESS['OPTIONS_BUTTON_RESET'] = 'Ñáðîñèòü';
+	$MESS['OPTIONS_API_KEY_DESCRIPTION'] = 'Âàø ïóáëè÷íûé êëþ÷ Carrot quest (API-KEY)';
+	$MESS['OPTIONS_SECRET_KEY_DESCRIPTION'] = 'Âàø ñåêðåòíûé êëþ÷ Carrot quest (API-SECRET)';
+	$MESS['OPTIONS_TRACK_CART_ADD'] = 'Îòñëåæèâàòü ñîáûòèå äîáàâëåíèÿ â êîðçèíó';
+	$MESS['OPTIONS_TRACK_CART_VISIT'] = 'Îòñëåæèâàòü ñîáûòèå ïîñåùåíèÿ êîðçèíû';
+	$MESS['OPTIONS_TRACK_CART_PRE_ORDER'] = 'Îòñëåæèâàòü ñîáûòèå ïðåäçàêàçà';
+	$MESS['OPTIONS_TRACK_PRODUCT_DETAILES'] = 'Îòñëåæèâàòü ñîáûòèå îòêðûòèÿ äåòàëüíîãî îïèñàíèÿ òîâàðà';
+	$MESS['OPTIONS_TRACK_ORDER_CONFIRM'] = 'Îòñëåæèâàòü ñîáûòèå ïîäòâåðæäåíèÿ (îôîðìëåíèÿ) çàêàçà';
+	$MESS['OPTIONS_KEYS'] = 'Íàñòðîéêè êëþ÷åé';
+	$MESS['OPTIONS_EVENTS'] = 'Íàñòðîéêè ñîáûòèé';
+	$MESS['OPTIONS_BONUS'] = 'Íàñòðîéêè áîíóñíîé ñèñòåìû';
+	$MESS['OPTIONS_ACTIVATE_BONUS'] = 'Âêëþ÷èòü áîíóñíóþ ñèñòåìó';
+	$MESS['OPTIONS_ADMIN_LINK'] = 'Ïåðåõîä â àäìèíèñòðàòèâíóþ ïàíåëü Carrot quest';
+	$MESS['OPTIONS_ADMIN_LINK_NAME'] = 'Ïåðåéòè';
+	$MESS['OPTIONS_CARROTQUEST_ADMIN'] = 'Àäìèíèñòðàòèâíàÿ ïàíåëü Carrot quest';
 ?>

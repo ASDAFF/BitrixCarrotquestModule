@@ -41,8 +41,8 @@ Class carrotquest_analytics extends CModule
 		}
 		else
 		{
-			$this->MODULE_VERSION = '1.0.9';
-			$this->MODULE_VERSION_DATE = '28.05.2014';
+			$this->MODULE_VERSION = '1.0.12';
+			$this->MODULE_VERSION_DATE = '04.06.2014';
 		}
 		
 		$this->PARTNER_NAME = "Carrot quest";
@@ -128,13 +128,13 @@ Class carrotquest_analytics extends CModule
 	function UnInstallFiles()
 	{
 		//! TODO Здесь в продакшене надо добавить в пути "$_SERVER["DOCUMENT_ROOT"].". На локалке с ним не удаляется.
-		DeleteDirFilesEx("/bitrix/js/".$this->MODULE_ID);
-		DeleteDirFilesEx("/bitrix/images/".$this->MODULE_ID);
+		DeleteDirFilesEx($_SERVER["DOCUMENT_ROOT"]."/bitrix/js/".$this->MODULE_ID);
+		DeleteDirFilesEx($_SERVER["DOCUMENT_ROOT"]."/bitrix/images/".$this->MODULE_ID);
 		
 		// Переопределенные темплейты компонентов
-		DeleteDirFilesEx("/bitrix/templates/.default/components/bitrix/sale.order.ajax");
-		DeleteDirFilesEx("/bitrix/templates/.default/components/bitrix/catalog");
-		DeleteDirFilesEx("/bitrix/templates/.default/components/bitrix/sale.basket.basket");
+		DeleteDirFilesEx($_SERVER["DOCUMENT_ROOT"]."/bitrix/templates/.default/components/bitrix/sale.order.ajax");
+		DeleteDirFilesEx($_SERVER["DOCUMENT_ROOT"]."/bitrix/templates/.default/components/bitrix/catalog");
+		DeleteDirFilesEx($_SERVER["DOCUMENT_ROOT"]."/bitrix/templates/.default/components/bitrix/sale.basket.basket");
 		return true;
 	}	
 	

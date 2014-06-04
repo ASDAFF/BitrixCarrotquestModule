@@ -71,7 +71,7 @@ $MESS["SALE_PACKS_COUNT"] = "Number of packages";
 $MESS["SOA_ORDER_DELIVERY_EXTRA_PARAMS"] = "Extra delivery parameters";
 $MESS["SOA_ORDER_DELIVERY_EXTRA_PARAMS_SAVE_ERROR"] = "Error saving data";
 
-// Р­С‚Рѕ РґР»СЏ Carrotquest, РѕСЃС‚Р°Р»СЊРЅРѕРµ СЃС‚Р°РЅР°РґСЂС‚РЅРѕРµ РґР»СЏ С€Р°Р±Р»РѕРЅР°
+// Это для Carrotquest, остальное станадртное для шаблона
 $MESS['CARROTQUEST_CURRENCY'] = "RUR";
 $MESS['SOA_TEMPL_SUM_CQ_DISCOUNT'] = "Carrot Quest discount";
 ?>

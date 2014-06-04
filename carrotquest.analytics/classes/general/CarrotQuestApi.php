@@ -60,7 +60,7 @@ class CarrotQuestApi
 		return true;
 	}
 	
-	public function track ($event)
+	public function Track ($event)
 	{
 		$data = array(
 			"event"			=> $event,

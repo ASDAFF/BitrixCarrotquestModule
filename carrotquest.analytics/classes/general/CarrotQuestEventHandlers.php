@@ -33,7 +33,6 @@ class CarrotQuestEventHandlers
 							if (info)
 							{
 								var product = JSON.parse(info);
-								console.log('beforeTrack', product);
 								
 								// Отсылаем добавленный товар в CarrotQuest
 								carrotquest.trackBasketAdd({
@@ -66,9 +65,10 @@ class CarrotQuestEventHandlers
 		// Поэтому рассчет на то, что сначала в компоненте срабатывает этот обработчик и устанавливает кук добавленного товара.
 		// Затем срабатывает JS событие, на котором висит обработчик и использует этот кук
 		$arFields['ADDED_LIST_ID'] = $ID;
-		$res = CIBlockElement::GetByID($ID); 
-		if ($el_arr= $res->GetNext()) 
-			$arFields['xxx'] = $el_arr['NAME'];
+		$lang = CLanguage::GetList($by="active", $order="desc", Array("NAME" => "russian"));
+		$lang = $lang->Fetch();
+		if ($lang['CHARSET'] == 'windows-1251')
+			$arFields['NAME'] = iconv('windows-1251', 'UTF-8', $arFields['NAME']);
 		setcookie("cqAddBasketProduct",json_encode($arFields));
 		return true;
     }

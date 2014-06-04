@@ -67,6 +67,10 @@
 	{
 		$cookie = array();
 		
+		// Кодировка Windows-1251 распознается некорректно...
+		$lang = CLanguage::GetList($by="active", $order="desc", Array("NAME" => "russian"));
+		$lang = $lang->Fetch();
+		
 		foreach ($arResult['BASKET_ITEMS'] as $value)
 		{
 			$item = array(
@@ -77,6 +81,9 @@
 				"price"			=> $value['PRICE'],
 				//"fullObject"	=> $value
 			);
+			
+			if ($lang['CHARSET'] == 'windows-1251')
+				CarrotQuestEventHandlers::ToUTF($item);
 			array_push($cookie,$item);
 		};
 		setcookie('CQBasketItems', json_encode($cookie));

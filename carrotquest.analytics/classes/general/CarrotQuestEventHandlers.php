@@ -65,10 +65,13 @@ class CarrotQuestEventHandlers
 		// Поэтому рассчет на то, что сначала в компоненте срабатывает этот обработчик и устанавливает кук добавленного товара.
 		// Затем срабатывает JS событие, на котором висит обработчик и использует этот кук
 		$arFields['ADDED_LIST_ID'] = $ID;
+		
+		// Кодировка Windows-1251 распознается некорректно...
 		$lang = CLanguage::GetList($by="active", $order="desc", Array("NAME" => "russian"));
 		$lang = $lang->Fetch();
 		if ($lang['CHARSET'] == 'windows-1251')
-			$arFields['NAME'] = iconv('windows-1251', 'UTF-8', $arFields['NAME']);
+			CarrotQuestEventHandlers::ToUTF($arFields);
+			
 		setcookie("cqAddBasketProduct",json_encode($arFields));
 		return true;
     }
@@ -86,6 +89,15 @@ class CarrotQuestEventHandlers
 		
         return true;
     }
+	
+	static function ToUTF (&$object)
+	{
+		foreach($object as $key => $value)
+			if (gettype($value) == 'array' || gettype($value) == 'object')
+				CarrotQuestEventHandlers::ToUTF($value);
+			else
+				$object[$key] = iconv('windows-1251', 'UTF-8', $value);
+	}
 	
 	static function OnOrderAddHandler ($ID, $arFields)
 	{

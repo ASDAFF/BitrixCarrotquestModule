@@ -1,8 +1,8 @@
 // для работы с куками
 (function () {
-	if (typeof cookie == 'undefined')
+	if (typeof carrotquest_cookie == 'undefined')
 	{
-		Cookie = {
+		carrotquest_cookie = {
 			// возвращает cookie если есть или undefined
 			get: function (name) {
 				var matches = document.cookie.match(new RegExp(

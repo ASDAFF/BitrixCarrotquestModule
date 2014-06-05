@@ -68,8 +68,8 @@
 		$phpCache->CleanDir();
 	
 		// Трекаем успешную установку модуля
-		global $CQ;
-		$CQ->Connect();
+		global $carrotquest_API;
+		$carrotquest_API->Connect();
 		?>
 			<script>carrotquest.track('SuccessfullInstallBitrixModule');</script>
 		<?

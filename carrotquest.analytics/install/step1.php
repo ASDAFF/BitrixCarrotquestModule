@@ -9,18 +9,18 @@
 	{
 		width: 200px;
 	}
-	#keys
+	#carrotquest_install_keys
 	{
 		margin-left: 20px;
 	}
-	#help
+	#carrotquest_install_help
 	{
 	
 		margin-top: 40px !important;	
 		display: block !important;
 		width: 500px;
 	}
-	#help input[type="text"]
+	#carrotquest_install_help input[type="text"]
 	{
 		width: 200px;
 	}
@@ -38,7 +38,7 @@
 	<input type="hidden" name="id" value="<?=CARROTQUEST_MODULE_ID?>">
 	<input type="hidden" name="step" value="2">
 	<input type="hidden" name="clear_cache_session" value="Y">
-	<table id="keys">
+	<table id="carrotquest_install_keys">
 		<tr>
 			<td>
 				<?= GetMessage('CARROTQUEST_INSTALL_ENTER_API_KEY') ?>: 
@@ -56,7 +56,7 @@
 		</tr>
 		<tr><td><input type="submit" name="inst" style="display: block;" value="<?echo GetMessage("MOD_INSTALL")?>"></td></tr>
 	</table>
-	<table id="help" class="adm-info-message">
+	<table id="carrotquest_install_help" class="adm-info-message">
 		<tr>
 			<td>
 				<?= GetMessage('CARROTQUEST_INSTALL_NO_KEY') ?>:

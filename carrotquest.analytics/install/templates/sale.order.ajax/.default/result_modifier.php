@@ -2,8 +2,8 @@
 	function askServer($arOrder)
 	{
 		// Получаем морковки
-		global $CQ;
-		return $CQ->GetSelectedCarrots();
+		global $carrotquest_API;
+		return $carrotquest_API->GetSelectedCarrots();
 	}
 	function formatPrice ($price)
 	{

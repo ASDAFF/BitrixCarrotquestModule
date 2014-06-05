@@ -17,10 +17,10 @@ class CarrotQuestEventHandlers
 	
     static function ConnectHandler($arFields)
 	{
-		global $CQ;
+		global $carrotquest_API;
 
 		// Подключение к CarrotQuest
-		if ($CQ->Connect())
+		if ($carrotquest_API->Connect())
 		{
 			// Перехват события добавления в корзину
 			// Информацию в Cookie записывает событие php OnBasketAdd (вывести там JS нельзя).
@@ -28,13 +28,13 @@ class CarrotQuestEventHandlers
 			?>	<script>
 					function OnBasketAdd()
 					{
-						if (typeof Cookie != 'undefined')
+						if (typeof carrotquest_cookie != 'undefined')
 						{
-							var info = Cookie.get("carrotquest_add_basket_product");
+							var info = carrotquest_cookie.get("carrotquest_add_basket_product");
 							if (info)
 							{
-								Cookie.delete("carrotquest_add_basket_product");
-								console.log(Cookie.get("carrotquest_add_basket_product"));
+								carrotquest_cookie.delete("carrotquest_add_basket_product");
+								console.log(carrotquest_cookie.get("carrotquest_add_basket_product"));
 								var product = JSON.parse(info);
 								
 								// Отсылаем добавленный товар в CarrotQuest
@@ -46,7 +46,7 @@ class CarrotQuestEventHandlers
 								});
 							}
 						}
-						else ; //console.log('Cookie is undefined');
+						else ; //console.log('carrotquest_cookie is undefined');
 					}
 					// Это на случай если js событие не сработало. Тогда при первом же обновлении  страницы мы отошлем в базу событие.
 					OnBasketAdd();
@@ -110,8 +110,8 @@ class CarrotQuestEventHandlers
 		// Также необхоидмо вызвать событие оформления заказа в carrotquest
 		if (COption::GetOptionString(CARROTQUEST_MODULE_ID,'cqTrackOrderConfirm') != '')
 		{
-			global $CQ;
-			$CQ->OrderConfirm($ID, $arFields);
+			global $carrotquest_API;
+			$carrotquest_API->OrderConfirm($ID, $arFields);
 		}
 		return true;
 	}
@@ -130,10 +130,11 @@ class CarrotQuestEventHandlers
 	// Вызывается методом OnUpdateInstalled
 	static function LoadSaleModuleTemplates ()
 	{
+		global $APPLICATION;
 		// Корзина
 		CopyDirFiles(
 			$_SERVER["DOCUMENT_ROOT"]."/bitrix/components/bitrix/sale.basket.basket/templates/.default/", 
-			$APPLICATION->GetTemplatePath()."/components/bitrix/sale.basket.basket/.default/", 
+			$_SERVER["DOCUMENT_ROOT"]."/bitrix/templates/.default/components/bitrix/sale.basket.basket/.default/", 
 			true, true);
 		file_put_contents($_SERVER["DOCUMENT_ROOT"]."/bitrix/templates/.default/components/bitrix/sale.basket.basket/.default/template.php",
 		"\n<!-- CarrotQuest Basket Visit Event Start -->\n".
@@ -149,9 +150,10 @@ class CarrotQuestEventHandlers
 	// Вызывается методом OnUpdateInstalled
 	static function LoadCatalogModuleTemplates ()
 	{
+		global $APPLICATION;	
 		CopyDirFiles(
 			$_SERVER["DOCUMENT_ROOT"]."/bitrix/components/bitrix/catalog/templates/.default/", 
-			$APPLICATION->GetTemplatePath()."/components/bitrix/catalog/.default/", 
+			$_SERVER["DOCUMENT_ROOT"]."/bitrix/templates/.default/components/bitrix/catalog/.default/", 
 			true, true);
 		file_put_contents($_SERVER["DOCUMENT_ROOT"]."/bitrix/templates/.default/components/bitrix/catalog/.default/bitrix/catalog.element/.default/template.php",
 		"\n<!-- CarrotQuest Detailed Product Info Event Start -->\n".

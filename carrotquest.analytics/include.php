@@ -37,7 +37,7 @@ CModule::AddAutoloadClasses(
 );
 
 // Нам нужно, чтобы во всем приложении действовал один объект
-$GLOBALS['CQ'] = new CarrotQuestApi();
+$GLOBALS['carrotquest_API'] = new CarrotQuestApi();
 
 // Подключаем язык
 IncludeModuleLangFile(__FILE__);

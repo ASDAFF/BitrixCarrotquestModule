@@ -41,7 +41,7 @@ Class carrotquest_analytics extends CModule
 		}
 		else
 		{
-			$this->MODULE_VERSION = '1.0.15';
+			$this->MODULE_VERSION = '1.0.16';
 			$this->MODULE_VERSION_DATE = '05.06.2014';
 		}
 		
@@ -89,7 +89,7 @@ Class carrotquest_analytics extends CModule
 	
 	function DoUninstall()
 	{
-		global $DOCUMENT_ROOT, $APPLICATION, $CQ;
+		global $DOCUMENT_ROOT, $APPLICATION;
 
         COption::RemoveOption("cqApiKey");
 		COption::RemoveOption("cqApiSecret");
@@ -105,6 +105,10 @@ Class carrotquest_analytics extends CModule
 	
 	function InstallFiles()
 	{
+		global $APPLICATION;
+		
+		?> <script>console.log('<?=  SITE_TEMPLATE_ID ?>'); </script> <?
+			
 		CopyDirFiles(
 			$_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$this->MODULE_ID."/install/js",
 			$_SERVER["DOCUMENT_ROOT"]."/bitrix/js/".$this->MODULE_ID,
@@ -118,9 +122,10 @@ Class carrotquest_analytics extends CModule
 		// Также установлен обработчик, который выполняет данную операцию при обновлении модулей.
 		CarrotQuestEventHandlers::LoadCatalogModuleTemplates();
 		CarrotQuestEventHandlers::LoadSaleModuleTemplates();
+	
 		CopyDirFiles(
 			$_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$this->MODULE_ID."/install/templates/", 
-			$APPLICATION->GetTemplatePath()."/components/bitrix/", 
+			$_SERVER["DOCUMENT_ROOT"]."/bitrix/templates/.default/components/bitrix/", 
 			true, true);
 		return true;
 	}
@@ -128,13 +133,14 @@ Class carrotquest_analytics extends CModule
 	function UnInstallFiles()
 	{
 		global $APPLICATION;
+		?> <script>console.log('<?= $APPLICATION->GetTemplatePath() ?>'); </script> <?
 		DeleteDirFilesEx("/bitrix/js/".$this->MODULE_ID."/");
 		DeleteDirFilesEx("/bitrix/images/".$this->MODULE_ID."/");
 		
 		// Переопределенные темплейты компонентов
-		DeleteDirFilesEx($APPLICATION->GetTemplatePath()."/components/bitrix/sale.order.ajax/");
-		DeleteDirFilesEx($APPLICATION->GetTemplatePath()."/components/bitrix/catalog/");
-		DeleteDirFilesEx($APPLICATION->GetTemplatePath()."/components/bitrix/sale.basket.basket/");
+		DeleteDirFilesEx("/bitrix/templates/.default/components/bitrix/sale.order.ajax/");
+		DeleteDirFilesEx("/bitrix/templates/.default/components/bitrix/catalog/");
+		DeleteDirFilesEx("/bitrix/templates/.default/components/bitrix/sale.basket.basket/");
 		return true;
 	}	
 	

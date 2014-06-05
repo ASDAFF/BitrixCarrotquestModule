@@ -120,7 +120,7 @@ Class carrotquest_analytics extends CModule
 		CarrotQuestEventHandlers::LoadSaleModuleTemplates();
 		CopyDirFiles(
 			$_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$this->MODULE_ID."/install/templates/", 
-			$_SERVER["DOCUMENT_ROOT"]."/bitrix/templates/.default/components/bitrix/", 
+			$APPLICATION->GetTemplatePath()."/components/bitrix/", 
 			true, true);
 		return true;
 	}

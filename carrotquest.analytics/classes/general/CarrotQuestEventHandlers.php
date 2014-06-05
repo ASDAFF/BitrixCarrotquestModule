@@ -133,7 +133,7 @@ class CarrotQuestEventHandlers
 		// Корзина
 		CopyDirFiles(
 			$_SERVER["DOCUMENT_ROOT"]."/bitrix/components/bitrix/sale.basket.basket/templates/.default/", 
-			$_SERVER["DOCUMENT_ROOT"]."/bitrix/templates/.default/components/bitrix/sale.basket.basket/.default/", 
+			$APPLICATION->GetTemplatePath()."/components/bitrix/sale.basket.basket/.default/", 
 			true, true);
 		file_put_contents($_SERVER["DOCUMENT_ROOT"]."/bitrix/templates/.default/components/bitrix/sale.basket.basket/.default/template.php",
 		"\n<!-- CarrotQuest Basket Visit Event Start -->\n".
@@ -151,7 +151,7 @@ class CarrotQuestEventHandlers
 	{
 		CopyDirFiles(
 			$_SERVER["DOCUMENT_ROOT"]."/bitrix/components/bitrix/catalog/templates/.default/", 
-			$_SERVER["DOCUMENT_ROOT"]."/bitrix/templates/.default/components/bitrix/catalog/.default/", 
+			$APPLICATION->GetTemplatePath()."/components/bitrix/catalog/.default/", 
 			true, true);
 		file_put_contents($_SERVER["DOCUMENT_ROOT"]."/bitrix/templates/.default/components/bitrix/catalog/.default/bitrix/catalog.element/.default/template.php",
 		"\n<!-- CarrotQuest Detailed Product Info Event Start -->\n".

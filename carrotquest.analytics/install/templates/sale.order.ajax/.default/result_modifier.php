@@ -48,7 +48,7 @@
 			$result_price = $price - $discount_value;
 			
 			// Устанавливаем кук для обработчика оформления заказа
-			setcookie('CQPrice',$result_price);
+			setcookie('carrotquest_price',$result_price);
 			$arResult["ORDER_TOTAL_PRICE_FORMATED"] = formatPrice($result_price);
 		}
 		else
@@ -86,7 +86,7 @@
 				CarrotQuestEventHandlers::ToUTF($item);
 			array_push($cookie,$item);
 		};
-		setcookie('CQBasketItems', json_encode($cookie));
+		setcookie('carrotquest_basket_items', json_encode($cookie));
 	};
 
 ?>

@@ -26,12 +26,15 @@ class CarrotQuestEventHandlers
 			// Информацию в Cookie записывает событие php OnBasketAdd (вывести там JS нельзя).
 			if (COption::GetOptionString(CARROTQUEST_MODULE_ID,"cqTrackCartAdd")) {
 			?>	<script>
-					BX.addCustomEvent(window, "OnBasketChange", function () {
+					function OnBasketAdd()
+					{
 						if (typeof Cookie != 'undefined')
 						{
-							var info = Cookie.get("cqAddBasketProduct");
+							var info = Cookie.get("carrotquest_add_basket_product");
 							if (info)
 							{
+								Cookie.delete("carrotquest_add_basket_product");
+								console.log(Cookie.get("carrotquest_add_basket_product"));
 								var product = JSON.parse(info);
 								
 								// Отсылаем добавленный товар в CarrotQuest
@@ -43,9 +46,12 @@ class CarrotQuestEventHandlers
 								});
 							}
 						}
-						else ;
-							//console.log('Cookie is undefined');
-					});
+						else ; //console.log('Cookie is undefined');
+					}
+					// Это на случай если js событие не сработало. Тогда при первом же обновлении  страницы мы отошлем в базу событие.
+					OnBasketAdd();
+					// JS событие. Незадокументировано. Поэтому страховка выше.
+					BX.addCustomEvent(window, "OnBasketChange", OnBasketAdd);
 				</script>
 			<?	};
 			
@@ -72,7 +78,7 @@ class CarrotQuestEventHandlers
 		if ($lang['CHARSET'] == 'windows-1251')
 			CarrotQuestEventHandlers::ToUTF($arFields);
 			
-		setcookie("cqAddBasketProduct",json_encode($arFields));
+		setcookie("carrotquest_add_basket_product",json_encode($arFields));
 		return true;
     }
 	
@@ -83,7 +89,7 @@ class CarrotQuestEventHandlers
 		*/
 		if (COption::GetOptionString(CARROTQUEST_MODULE_ID,'cqActivateBonus') != '')
 		{
-			$arFields['PRICE'] = $_COOKIE['CQPrice'];
+			$arFields['PRICE'] = $_COOKIE['carrotquest_price'];
 			CSaleOrder::Update($ID, $arFields);
 		}
 		

@@ -140,13 +140,13 @@ class CarrotQuestApi
 		{
 			// Делаю через сервер, чтоб не было проблем с безопасностью бонусов.
 			$data = array(
-				"items" 		=> $_COOKIE['CQBasketItems'],
+				"items" 		=> $_COOKIE['carrotquest_basket_items'],
 				"appOrderId"	=> $ID,
 				"app"			=> '$self_app',
 				"user"			=> $this->UID,
 			);
-			setcookie('CQBasketItems','');
-			setcookie('CQOrderId', '');
+			setcookie('carrotquest_basket_items','');
+			setcookie('carrotquest_order_id', '');
 			
 			$url = "http://api.carrotquest.io/v1/orders?auth_token=".$this->AuthToken;
 			$answer = $this->HttpPost($url, $data);
@@ -155,7 +155,7 @@ class CarrotQuestApi
 		}
 		else {
 			// Остался кук CQBasketItems, мы его поймаем при загрузке страницы заказа в js
-			setcookie('CQOrderId', $ID);
+			setcookie('carrotquest_order_id', $ID);
 		}
     }
 }

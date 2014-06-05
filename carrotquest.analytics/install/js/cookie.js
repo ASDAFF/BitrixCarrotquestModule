@@ -35,7 +35,7 @@
 
 			// удаляет cookie
 			delete: function (name) {
-				this.set(name, null, { expires: -1 })
+				this.set(name, '', { expires: -1, path: "/" })
 			}
 		};
 	};

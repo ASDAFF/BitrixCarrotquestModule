@@ -3,13 +3,13 @@
 <!-- Carrot quest Track Order -->
 <? if (COption::GetOptionString(CARROTQUEST_MODULE_ID, 'cqActivateBonus')) { ?>
 <script>
-	var items = Cookie.get('CQBasketItems');
-	var orderID = Cookie.get('CQOrderId');
+	var items = Cookie.get('carrotquest_basket_items');
+	var orderID = Cookie.get('carrotquest_order_id');
 	if (items && orderID) // надо трекать заказ
 	{
 		carrotquest.trackOrder(JSON.parse(items), orderID);
-		Cookie.delete('CQBasketItems');
-		Cookie.delete('CQOrderId');
+		Cookie.delete('carrotquest_basket_items');
+		Cookie.delete('carrotquest_order_id');
 	}
 </script>
 <? } ?>

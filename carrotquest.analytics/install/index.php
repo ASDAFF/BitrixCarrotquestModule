@@ -41,7 +41,7 @@ Class carrotquest_analytics extends CModule
 		}
 		else
 		{
-			$this->MODULE_VERSION = '1.0.14';
+			$this->MODULE_VERSION = '1.0.15';
 			$this->MODULE_VERSION_DATE = '05.06.2014';
 		}
 		
@@ -131,9 +131,9 @@ Class carrotquest_analytics extends CModule
 		DeleteDirFilesEx("/bitrix/images/".$this->MODULE_ID."/");
 		
 		// Переопределенные темплейты компонентов
-		DeleteDirFilesEx("/bitrix/templates/.default/components/bitrix/sale.order.ajax/");
-		DeleteDirFilesEx("/bitrix/templates/.default/components/bitrix/catalog/");
-		DeleteDirFilesEx("/bitrix/templates/.default/components/bitrix/sale.basket.basket/");
+		DeleteDirFilesEx($APPLICATION->GetTemplatePath()."/components/bitrix/sale.order.ajax/");
+		DeleteDirFilesEx($APPLICATION->GetTemplatePath()."/components/bitrix/catalog/");
+		DeleteDirFilesEx($APPLICATION->GetTemplatePath()."/components/bitrix/sale.basket.basket/");
 		return true;
 	}	
 	

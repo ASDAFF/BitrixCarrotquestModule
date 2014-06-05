@@ -145,8 +145,8 @@ class CarrotQuestApi
 				"app"			=> '$self_app',
 				"user"			=> $this->UID,
 			);
-			setcookie('carrotquest_basket_items','');
-			setcookie('carrotquest_order_id', '');
+			setcookie('carrotquest_basket_items','',0,"/");
+			setcookie('carrotquest_order_id', '',0,"/");
 			
 			$url = "http://api.carrotquest.io/v1/orders?auth_token=".$this->AuthToken;
 			$answer = $this->HttpPost($url, $data);
@@ -155,7 +155,7 @@ class CarrotQuestApi
 		}
 		else {
 			// Остался кук CQBasketItems, мы его поймаем при загрузке страницы заказа в js
-			setcookie('carrotquest_order_id', $ID);
+			setcookie('carrotquest_order_id', $ID,0,"/");
 		}
     }
 }

@@ -78,7 +78,7 @@ class CarrotQuestEventHandlers
 		if ($lang['CHARSET'] == 'windows-1251')
 			CarrotQuestEventHandlers::ToUTF($arFields);
 			
-		setcookie("carrotquest_add_basket_product",json_encode($arFields));
+		setcookie("carrotquest_add_basket_product",json_encode($arFields), 0, "/");
 		return true;
     }
 	

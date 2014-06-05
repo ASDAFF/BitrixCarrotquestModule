@@ -127,6 +127,7 @@ Class carrotquest_analytics extends CModule
 	
 	function UnInstallFiles()
 	{
+		global $APPLICATION;
 		DeleteDirFilesEx("/bitrix/js/".$this->MODULE_ID."/");
 		DeleteDirFilesEx("/bitrix/images/".$this->MODULE_ID."/");
 		

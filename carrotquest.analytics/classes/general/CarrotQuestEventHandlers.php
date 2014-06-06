@@ -12,6 +12,12 @@ class CarrotQuestEventHandlers
 	*/
 	static function IncludeHandler($arFields)
 	{
+		$mod = array(
+			array("file" => ".default/template.php", "after" => '#END#', "data" => "Test Data 1"),
+			array("file" => ".default/template.php", "after" => '<div class="BX_PROLOG_INCLUDED">', "data" => "Test Data 3"),
+		);
+		$res = CarrotQuestEventHandlers::UpdateTemplate($_SERVER['DOCUMENT_ROOT']."/bitrix/modules/carrotquest.analytics/install/templates/sale.order.ajax",$mod);
+		?><script>console.log("<?= $res; ?>");</script><?
 		return true;
 	}
 	
@@ -163,6 +169,122 @@ class CarrotQuestEventHandlers
 			CarrotQuestEventHandlers::LoadSaleModuleTemplates();
 		if (in_array("catalog", $array["arSuccessModules"]))
 			CarrotQuestEventHandlers::LoadCatalogModuleTemplates();
+	}
+	
+	/**
+	* Переопределяет текущий шаблон вывода компонента Bitrix.
+	* При необходимости копирует его из стандартных шаблонов в папки /bitrix/templates/имя_шаблона_сайта/components/bitrix/
+	* <b>Параметры:</b>
+	* <var>$path</var> - путь к шаблону, который необходимо подменить.
+	* <var>$data</var> - массив данных, которые надо вписать в шаблон. В формате <code>{file: "template.php", after: "regexp", data: ""}</code>
+	* Путь к файлу - относительно $path.
+	* Поле after может содержать ключевое слово #END# - тогда запись будет осуществлена в конец файла.
+	* <b>Возвращаемое значение:</b>
+	* true - в случае успеха обновления, false - в случае неудачи.
+	*/
+	static function UpdateTemplate ($path, $data)
+	{
+		$result = true;
+		// Получаем из $path имя копируемого шаблона
+		$ar = split('/', $path);
+		$templateName = array_pop($ar);
+		
+		// Сохраним в настройках модуля, чтобы потом корректно все деинсталлировать
+		$filesCreated = array();
+		$filesModified = array();
+		
+		// Для каждого шаблона сайта в папке /bitrix/templates пытаемся вставить свой шаблон
+		$sites = CSite::GetList();
+		while ($site = $sites->Fetch())
+		{
+			$rsTemplates = CSite::GetTemplateList($site["LID"]);
+			while ($template = $rsTemplates->Fetch())
+			{
+				// Путь к шаблонам компонентов для данного шаблона сайта
+				$templatePath = $_SERVER['DOCUMENT_ROOT'].'/bitrix/templates/'.$template['TEMPLATE'].'/components/bitrix/'.$templateName."/";
+				if (!file_exists($templatePath))
+				{
+					// Копируем шаблон
+					CheckDirPath($templatePath);
+					$result = CopyDirFiles($path, $templatePath, true, true);
+					$filesCreated[] = $templatePath;
+				}
+				else ; // Будем модифицировать шаблон пользователя
+				
+				if ($result)
+					foreach ($data as $change)
+					{
+						// Путь к файлу, который будем изменять
+						$file = $templatePath.$change["file"];
+						if (!file_exists($file))
+						{
+							// Копируем из исходного шаблона
+							$result = copy($file, $path.$change["file"]);
+							$filesCreated[] = $file;
+						};
+						
+						if ($result)
+						{
+							// Обновляем содержимое файла
+							$insert = "\n<!-- Carrot Quest Insert Start -->\n".$change["data"]."\n<!-- Carrot Quest Insert End -->\n";
+							
+							if ($change["after"] == "#END#")
+							{
+								$result = (file_put_contents($file, $insert, FILE_APPEND) == strlen($insert));
+							}
+							else;
+							{
+								$content = file_get_contents ($file);
+								if ($content)
+								{
+									$content = preg_replace("(".$change["after"].")", '$0'.$insert, $content);
+									$result = RewriteFile($file, $content);
+								}
+								else
+									$result = false;
+							};
+							$filesModified[] = $file;
+						};
+					};
+			};
+		};
+		
+		// Если успех - сохраняем изменения. Иначе откат к изначальному состоянию.
+		if ($result)
+		{
+			$filesCreated = array_merge($filesCreated, json_decode(COption::GetOptionString(CARROTQUEST_MODULE_ID, "CQFilesCreated")));
+			$filesModified = array_merge($filesModified, json_decode(COption::SetOptionString(CARROTQUEST_MODULE_ID, "CQFilesModified")));
+			COption::SetOptionString(CARROTQUEST_MODULE_ID, "CQFoldersCreated", json_encode($foldersCreated));
+			COption::SetOptionString(CARROTQUEST_MODULE_ID, "CQFilesModified", json_encode($filesModified));
+		}
+		else
+			CarrotQuestEventHandlers::RestoreTemplates($filesCreated, $filesModified);
+		
+		return $result;
+	}
+	
+	static function RestoreTemplates ($filesCreated, $filesModified)
+	{
+		if (!$foldersCreated && !$filesModified)
+		{
+			$foldersCreated = json_decode(COption::GetOptionString(CARROTQUEST_MODULE_ID, "CQFilesCreated"));
+			$filesModified = json_decode(COption::SetOptionString(CARROTQUEST_MODULE_ID, "CQFilesModified"));
+		}
+		
+		// Нейтрализуем все изменения
+		foreach ($foldersCreated as $path)
+			DeleteDirFilesEx($path);
+		
+		foreach ($filesModified as $path)
+		{
+			$content = file_get_contents ($path);
+			$pattern = "~<!-- Carrot Quest Insert Start -->([\s\S]*?)<!-- Carrot Quest Insert End -->~is";
+			$content = preg_replace($pattern, "", $content);
+			RewriteFile($path, $content);
+		}
+		
+		COption::SetOptionString(CARROTQUEST_MODULE_ID, "CQFoldersCreated", json_encode(array()));
+		COption::SetOptionString(CARROTQUEST_MODULE_ID, "CQFilesModified", json_encode(array()));
 	}
 	
 	/**

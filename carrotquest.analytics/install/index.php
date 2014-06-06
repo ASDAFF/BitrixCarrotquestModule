@@ -104,12 +104,12 @@ Class carrotquest_analytics extends CModule
 	{
 		global $APPLICATION;
 		
-		?> <script>console.log('<?=  SITE_TEMPLATE_ID ?>'); </script> <?
-			
+		CheckDirPath($_SERVER["DOCUMENT_ROOT"]."/bitrix/js/".$this->MODULE_ID."/");	
 		CopyDirFiles(
-			$_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$this->MODULE_ID."/install/js",
+			$_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$this->MODULE_ID."/install/js/",
 			$_SERVER["DOCUMENT_ROOT"]."/bitrix/js/".$this->MODULE_ID,
 			true, true);
+		CheckDirPath($_SERVER["DOCUMENT_ROOT"]."/bitrix/images/".$this->MODULE_ID."/");	
 		CopyDirFiles(
 			$_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$this->MODULE_ID."/install/images/", 
 			$_SERVER["DOCUMENT_ROOT"]."/bitrix/images/".$this->MODULE_ID."/", 
@@ -130,7 +130,7 @@ Class carrotquest_analytics extends CModule
 	function UnInstallFiles()
 	{
 		global $APPLICATION;
-		?> <script>console.log('<?= $APPLICATION->GetTemplatePath() ?>'); </script> <?
+
 		DeleteDirFilesEx("/bitrix/js/".$this->MODULE_ID."/");
 		DeleteDirFilesEx("/bitrix/images/".$this->MODULE_ID."/");
 		

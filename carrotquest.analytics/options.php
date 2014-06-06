@@ -23,10 +23,7 @@
 		COption::SetOptionString(CARROTQUEST_MODULE_ID,"cqActivateBonus",$_POST['ActivateBonus'] ? "checked" : "");
 	}
 	 
-	/**
-	 * Описываем табы административной панели битрикса
-	 * Пока один таб, где можно поменять настройки ключей, событий, включить бонусы
-	 */
+	 // Описываем табы административной панели битрикса
 	$aTabs = array(
 		array(
 			'DIV'   => 'edit1',

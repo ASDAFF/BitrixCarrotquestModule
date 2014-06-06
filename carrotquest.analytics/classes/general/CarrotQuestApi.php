@@ -1,13 +1,31 @@
 ﻿<? 
 IncludeModuleLangFile( __FILE__ );
 
+/**
+* Класс для работы с сервером CarrotQuest.
+*/
 class CarrotQuestApi
 {
+	/**
+	* Имя модуля, инициализируется в конструкторе
+	*/
 	public static $MODULE_ID;
-	public $Error = false; // Сюда запишется ошибка, если такая произойдет
-    private $AuthToken; // Токен для отсылки данных с сервера api.API-KEY.API-SECRET
-	private $UID = null; // Идентификатор пользователя в Carrotquest
+	/**
+	* Содержит текст последней ошибки или false, если все в порядке
+	*/
+	public $Error = false;
+	/**
+	* Токен для отсылки данных с сервера <samp>api.API-KEY.API-SECRET</samp>
+	*/
+    private $AuthToken; 
+	/**
+	* Идентификатор пользователя в системе Carrot Quest
+	*/
+	private $UID = null;
 	
+	/**
+	* Конструктор класса. Инициализирует свойства.
+	*/
 	function __construct()
     {
 		$this->MODULE_ID = CARROTQUEST_MODULE_ID;
@@ -16,11 +34,14 @@ class CarrotQuestApi
             $this->AuthToken = 'app.' . COption::GetOptionString($this->MODULE_ID, 'cqApiKey') . '.' . COption::GetOptionString($this->MODULE_ID, 'cqApiSecret');
 		if (array_key_exists('carrotquest_uid', $_COOKIE))
 			$this->UID = $_COOKIE['carrotquest_uid'];
-		
     }
 	
-	/* Выполняет подключение к carrotquest. JS объект carrotquest уже должен быть инициализирован.
-	*  Если пользователь залогинен, шлет идентификационные данные carrotquest.
+	/**
+	*	Выполняет подключение к Carrot Quest на стороне клиента (JavaScript). JS объект <var>carrotquest</var> уже должен быть инициализирован.
+	*   Если пользователь залогинен, шлет идентификационные данные методом <var>carrotquest.identify()</var>.
+	*	<b>Параметры:</b> отсутствуют
+	*	<b>Возвращаемое значение:</b>
+	*	true, если в параметрах модуля найден API-KEY, false в противном случае
 	*/
 	public function Connect ()
 	{
@@ -60,6 +81,13 @@ class CarrotQuestApi
 		return true;
 	}
 	
+	/**
+	*	Трекинг события со стороны сервера.
+	*	<b>Параметры:</b>
+	*	<var>$event</var> - название события (строка)
+	*	<b>Возвращаемое значение:</b>
+	*	Текст ответа на запрос в формате json.
+	*/
 	public function Track ($event)
 	{
 		$data = array(
@@ -74,7 +102,15 @@ class CarrotQuestApi
 		return $answer;
 	}
 	
-	// Отправка любой информации запросом POST
+	/**
+	*	Отправляет запрос через Http со стороны сервера.
+	*	<b>Параметры:</b>
+	*	<var>$method</var> - Метод передачи параметров (GET или POST)
+	*	<var>$url</var> - Адрес запроса
+	*	<var>$data</var> - Данные, передаваемые методом <var>$method</var>
+	*	<b>Возвращаемое значение:</b>
+	*	Текст ответа на запрос в формате json.
+	*/
 	private function HttpQuery ($method, $url, $data) 
 	{
         $fields = '';
@@ -105,7 +141,12 @@ class CarrotQuestApi
 		return $result;
     }
 	
-	// Получение объекта, указывающего количество морковок, выбранных пользователем
+	/**
+	*	Отправляет запрос через Http со стороны сервера.
+	*	<b>Параметры:</b> отсутствуют
+	*	<b>Возвращаемое значение:</b>
+	*	Количество морковок, выбранных пользователем.
+	*/
 	public function GetSelectedCarrots ()
 	{
 		$data = array();
@@ -115,12 +156,17 @@ class CarrotQuestApi
 		return $answer["data"];
 	}
 	
-	// Отправка события о заказе
+	/**
+	*	Событие подтверждения заказа. Если включена бонусная система - срабатывает со стороны сервера, иначе со стороны клиента.
+	*	<b>Параметры:</b>
+	*	<var>$ID</var> - Идентификатор заказа.
+	*	<var>$arFields</var> - Параметры заказа в формате Bitrix.
+	*	<var>$_COOKIE['carrotquest_basket_items']</var> - список товаров в корзине в формате Carrot Quest (JSON)
+	*	<b>Возвращаемое значение:</b>
+	*	Ответ сервера на запрос подтверждения заказа, если включена бонусная система. Если выключена -  {server: false};
+	*/
 	public function OrderConfirm ($ID, $arFields)
     {
-		// Чисто тестовый вывод
-		// RewriteFile('c:\Bitrix\www\bitrix\modules\carrotquest\tmp.txt',json_encode($data));
-		
 		if (COption::GetOptionString($this->MODULE_ID,'cqActivateBonus') == "checked")
 		{
 			// Делаю через сервер, чтоб не было проблем с безопасностью бонусов.
@@ -141,6 +187,7 @@ class CarrotQuestApi
 		else {
 			// Остался кук CQBasketItems, мы его поймаем при загрузке страницы заказа в js
 			setcookie('carrotquest_order_id', $ID,0,"/");
+			return array('server' => false);
 		}
     }
 }

@@ -36,7 +36,9 @@ CModule::AddAutoloadClasses(
 	)
 );
 
-// Нам нужно, чтобы во всем приложении действовал один объект
+/**
+* Переменная содержит инициализированный, единый для всей страницы объект <var>CarrotQuestApi</var>
+*/
 $GLOBALS['carrotquest_API'] = new CarrotQuestApi();
 
 // Подключаем язык

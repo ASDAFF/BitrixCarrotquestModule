@@ -7,10 +7,7 @@ $modulePath = substr($modulePath, 0, strlen($modulePath) - strlen("/install/inde
 require_once($modulePath."/constants.php");
 
 include_once(CARROTQUEST_MODULE_PATH."include.php");
-
 require(GetLangFileName(CARROTQUEST_MODULE_PATH."lang/", "/install/index.php"));
-
-
 
 CModule::IncludeModule('sale');
 

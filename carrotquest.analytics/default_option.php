@@ -1,5 +1,8 @@
 <?
-$carrotquest_analytics_default_option = array(
+	/**
+	* Значения опций модуля по умолчанию
+	*/
+	$carrotquest_analytics_default_option = array(
 		"cqApiKey"				=> "",
 		"cqSecretKey"			=> "",
 		"cqTrackCartAdd"		=> "checked",

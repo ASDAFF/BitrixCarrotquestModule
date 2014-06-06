@@ -2,20 +2,26 @@
 IncludeModuleLangFile( __FILE__ );
 CModule::IncludeModule('sale');
 
+/**
+* Класс содержит обработчики событий различных модулей, используемых в Carrot Quest.
+*/
 class CarrotQuestEventHandlers
 {
+	/**
+	*	Это событие нужно только затем, что по какой-то мистике в событии OnAfterEpilog (ConnectHandler) не вызвается include.php. Костыль, но работает.
+	*/
 	static function IncludeHandler($arFields)
 	{
-		/* Это событие нужно только затем, что по какой-то мистике в событии OnAfterEpilog (ConnectHandler) не вызвается include.php. Костыль, но работает. */
-		/*?>
-			<script src="/bitrix/js/<?= CARROTQUEST_MODULE_ID; ?>/jquery.js"></script>
-			<script src="/bitrix/js/<?= CARROTQUEST_MODULE_ID; ?>/carrotquest_init.js"></script>
-			<script src="/bitrix/js/<?= CARROTQUEST_MODULE_ID; ?>/cookie.js"></script>
-		<?*/
-		
+		return true;
 	}
 	
-    static function ConnectHandler($arFields)
+	/**
+	*	Событие вызывается перед загрузкой любой страницы магазина, подключая carrotquest.
+	*	Кроме того, обрабатывает событие добавления товара в корзину со стороны клиента.
+	*	<b>Параметры:</b>
+	*	<var>$_COOKIE['carrotquest_add_basket_product']</var> - Если этот кук определен, то будет вызван трек добавления товара в корзину.
+	*/
+    static function ConnectHandler()
 	{
 		global $carrotquest_API;
 
@@ -34,7 +40,7 @@ class CarrotQuestEventHandlers
 							if (info)
 							{
 								carrotquest_cookie.delete("carrotquest_add_basket_product");
-								console.log(carrotquest_cookie.get("carrotquest_add_basket_product"));
+
 								var product = JSON.parse(info);
 								
 								// Отсылаем добавленный товар в CarrotQuest
@@ -65,11 +71,19 @@ class CarrotQuestEventHandlers
         return true;
     }
 	
+	/**
+	*	Серверное событие добавления в корзину. В идеале всё событие должно быть обработано здесь.
+	*	Но на практике здесь нельзя выполнять JavaScript. Поэтому рассчет на то, что сначала в компоненте срабатывает этот обработчик
+	*	и устанавливает cookie добавленного товара, а затем срабатывает JS событие, на котором висит обработчик и использует этот cookie
+	*	<b>Параметры:</b>
+	*	<var>$ID</var> - номер, под которым товар был добавлен в список (не путать с ID товара и заказа)
+	*	<var>$arFields</var> - параметры товара в формате Bitrix.
+	*	<b>Возвращаемое значение:</b>
+	*	true
+	*/
 	static function OnBasketAdd($ID, $arFields)
 	{ 
-		// В идеале все события весятся здесь. Но на практике здесь нельзя выполнить js. И все грусть печаль.
-		// Поэтому рассчет на то, что сначала в компоненте срабатывает этот обработчик и устанавливает кук добавленного товара.
-		// Затем срабатывает JS событие, на котором висит обработчик и использует этот кук
+		
 		$arFields['ADDED_LIST_ID'] = $ID;
 		
 		// Кодировка Windows-1251 распознается некорректно...
@@ -82,11 +96,18 @@ class CarrotQuestEventHandlers
 		return true;
     }
 	
+	/**
+	*	Нам необходимо переопределить стоимость с учетом скидки Carrotquest. 
+	*	Рассчет был произведен в result_modifier.php, подмененного нами шаблона sale.order.ajax.
+	*	<b>Параметры:</b>
+	*	<var>$ID</var> - ID заказа
+	*	<var>$arFields</var> - параметры заказа в формате Bitrix.
+	*	<var>$_COOKIE['carrotquest_price']</var> - стоимость товара с учетом скидки Carrot Quest
+	*	<b>Возвращаемое значение:</b>
+	*	true
+	*/
 	static function OnBeforeOrderAddHandler($ID, $arFields)
 	{
-		/*  Нам необходимо переопределить стоимость с учетом скидки Carrotquest. 
-			Рассчет был произведен в result_modifier.php, подмененного нами шаблона sale.order.ajax.
-		*/
 		if (COption::GetOptionString(CARROTQUEST_MODULE_ID,'cqActivateBonus') != '')
 		{
 			$arFields['PRICE'] = $_COOKIE['carrotquest_price'];
@@ -96,6 +117,13 @@ class CarrotQuestEventHandlers
         return true;
     }
 	
+	/**
+	*	Перекодирует все поля объекта, заданного параметром из windows-1251 в UTF-8
+	*	<b>Параметры:</b>
+	*	<var>$object</var> - объект для перекодирования
+	*	<b>Возвращаемое значение:</b>
+	*	нет
+	*/
 	static function ToUTF (&$object)
 	{
 		foreach($object as $key => $value)
@@ -105,9 +133,16 @@ class CarrotQuestEventHandlers
 				$object[$key] = iconv('windows-1251', 'UTF-8', $value);
 	}
 	
+	/**
+	*	Событие оформления заказа - трекинг в Carrot Quest
+	*	<b>Параметры:</b>
+	*	<var>$ID</var> - ID заказа
+	*	<var>$arFields</var> - параметры заказа в формате Bitrix.
+	*	<b>Возвращаемое значение:</b>
+	*	true
+	*/
 	static function OnOrderAddHandler ($ID, $arFields)
 	{
-		// Также необхоидмо вызвать событие оформления заказа в carrotquest
 		if (COption::GetOptionString(CARROTQUEST_MODULE_ID,'cqTrackOrderConfirm') != '')
 		{
 			global $carrotquest_API;
@@ -116,8 +151,11 @@ class CarrotQuestEventHandlers
 		return true;
 	}
 	
-	/* Если обновились сторонние модули template-ы которых использует carrotquest,
-	*  этот метод копирует необходимые новые template-ы и встраивает в них carrotquest.
+	/** Если обновились сторонние модули template-ы которых использует Carrot Quest,
+	*  этот метод копирует необходимые новые template-ы и встраивает в них код Carrot Quest.
+	*	<b>Параметры:</b>
+	*	<var>$array</var> - параметры обновленных модулей
+	*	<b>Возвращаемое значение:</b> отсутствует.
 	*/
 	static function OnUpdateInstalled ($array)
 	{
@@ -127,7 +165,11 @@ class CarrotQuestEventHandlers
 			CarrotQuestEventHandlers::LoadCatalogModuleTemplates();
 	}
 	
-	// Вызывается методом OnUpdateInstalled
+	/**
+	*	Обновляет шаблоны модуля sale.
+	*	<b>Параметры:</b> отсутствуют
+	*	<b>Возвращаемое значение:</b> отсутствует.
+	*/
 	static function LoadSaleModuleTemplates ()
 	{
 		global $APPLICATION;
@@ -147,7 +189,11 @@ class CarrotQuestEventHandlers
 		"<!-- CarrotQuest Basket Visit Event End -->",FILE_APPEND);
 	}
 	
-	// Вызывается методом OnUpdateInstalled
+	/**
+	*	Обновляет шаблоны модуля catalog.
+	*	<b>Параметры:</b> отсутствуют
+	*	<b>Возвращаемое значение:</b> отсутствует.
+	*/
 	static function LoadCatalogModuleTemplates ()
 	{
 		global $APPLICATION;	

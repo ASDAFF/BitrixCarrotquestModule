@@ -118,25 +118,32 @@ class CarrotQuestApi
             $fields .= $key . '=' . $value . '&'; 
         }
         rtrim($fields, '&');
-
-        $msg = curl_init();
-
-        curl_setopt($msg, CURLOPT_URL, $url);
-		if ($method == 'POST')
-			curl_setopt($msg, CURLOPT_POST, count($data));
-		elseif ($method == 'GET')
-			curl_setopt($msg, CURLOPT_GET, count($data));
-		else
+		
+		$msg = curl_init();
+		try
 		{
-			curl.close($msg);
-			return false;
+			curl_setopt($msg, CURLOPT_URL, $url);
+			if ($method == 'POST')
+				curl_setopt($msg, CURLOPT_POST, count($data));
+			elseif ($method == 'GET')
+				curl_setopt($msg, CURLOPT_GET, count($data));
+			else
+			{
+				curl_close($msg);
+				return false;
+			}
+			curl_setopt($msg, CURLOPT_POSTFIELDS, $fields);
+			curl_setopt($msg, CURLOPT_RETURNTRANSFER, 1);
+
+			$result = curl_exec($msg);
 		}
-        curl_setopt($msg, CURLOPT_POSTFIELDS, $fields);
-        curl_setopt($msg, CURLOPT_RETURNTRANSFER, 1);
-
-        $result = curl_exec($msg);
-
-        curl_close($msg);
+		catch (Exception $e)
+		{
+			$result = array("meta" => array("error" => "Exception", "errorMessage" => $e->GetMessage()), "data" => array());
+			$this->Error = $e->GetMessage();
+		};
+		
+		curl_close($msg);
 		
 		return $result;
     }
@@ -145,7 +152,7 @@ class CarrotQuestApi
 	*	Отправляет запрос через Http со стороны сервера.
 	*	<b>Параметры:</b> отсутствуют
 	*	<b>Возвращаемое значение:</b>
-	*	Количество морковок, выбранных пользователем.
+	*	Количество морковок, выбранных пользователем. False в случае ошибки.
 	*/
 	public function GetSelectedCarrots ()
 	{
@@ -153,7 +160,10 @@ class CarrotQuestApi
 		$url = "http://api.carrotquest.io/v1/users/".$this->UID.'/carrots/$self_app?auth_token='.$this->AuthToken;
         $answer = $this->HttpQuery('GET',$url, $data);
 		$answer = json_decode($answer, true);
-		return $answer["data"];
+		if ($answer['meta']['error'])
+			return false;
+		else
+			return $answer["data"];
 	}
 	
 	/**

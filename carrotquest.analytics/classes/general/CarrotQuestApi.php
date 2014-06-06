@@ -69,13 +69,13 @@ class CarrotQuestApi
 		);
 		
 		$url = "http://api.carrotquest.io/v1/events?auth_token=".$this->AuthToken;
-        $answer = $this->HttpPost($url, $data);
+        $answer = $this->HttpQuery('POST',$url, $data);
 		$answer = json_decode($answer, true);
 		return $answer;
 	}
 	
 	// Отправка любой информации запросом POST
-	private function HttpPost($url, $data) 
+	private function HttpQuery ($method, $url, $data) 
 	{
         $fields = '';
         foreach($data as $key => $value) { 
@@ -83,39 +83,24 @@ class CarrotQuestApi
         }
         rtrim($fields, '&');
 
-        $post = curl_init();
+        $msg = curl_init();
 
-        curl_setopt($post, CURLOPT_URL, $url);
-        curl_setopt($post, CURLOPT_POST, count($data));
-        curl_setopt($post, CURLOPT_POSTFIELDS, $fields);
-        curl_setopt($post, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($msg, CURLOPT_URL, $url);
+		if ($method == 'POST')
+			curl_setopt($msg, CURLOPT_POST, count($data));
+		elseif ($method == 'GET')
+			curl_setopt($msg, CURLOPT_GET, count($data));
+		else
+		{
+			curl.close($msg);
+			return false;
+		}
+        curl_setopt($msg, CURLOPT_POSTFIELDS, $fields);
+        curl_setopt($msg, CURLOPT_RETURNTRANSFER, 1);
 
-        $result = curl_exec($post);
+        $result = curl_exec($msg);
 
-        curl_close($post);
-		
-		return $result;
-    }
-	
-	// Отправка любой информации запросом GET
-	private function HttpGet($url, $data) 
-	{
-        $fields = '';
-        foreach($data as $key => $value) { 
-            $fields .= $key . '=' . $value . '&'; 
-        }
-        rtrim($fields, '&');
-
-        $get = curl_init();
-
-        curl_setopt($get, CURLOPT_URL, $url);
-        curl_setopt($get, CURLOPT_GET, count($data));
-        curl_setopt($get, CURLOPT_GETFIELDS, $fields);
-        curl_setopt($get, CURLOPT_RETURNTRANSFER, true);
-
-        $result = curl_exec($get);
-
-        curl_close($get);
+        curl_close($msg);
 		
 		return $result;
     }
@@ -125,7 +110,7 @@ class CarrotQuestApi
 	{
 		$data = array();
 		$url = "http://api.carrotquest.io/v1/users/".$this->UID.'/carrots/$self_app?auth_token='.$this->AuthToken;
-        $answer = $this->HttpGet($url, $data);
+        $answer = $this->HttpQuery('GET',$url, $data);
 		$answer = json_decode($answer, true);
 		return $answer["data"];
 	}
@@ -149,7 +134,7 @@ class CarrotQuestApi
 			setcookie('carrotquest_order_id', '',0,"/");
 			
 			$url = "http://api.carrotquest.io/v1/orders?auth_token=".$this->AuthToken;
-			$answer = $this->HttpPost($url, $data);
+			$answer = $this->HttpQuery('POST',$url, $data);
 			$answer = json_decode($answer, true);
 			return $answer;
 		}

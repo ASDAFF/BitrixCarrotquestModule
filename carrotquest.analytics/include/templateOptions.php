@@ -57,7 +57,7 @@
 
 <script>
 	$(document).ready(function () {
-	
+		
 		// Обработчик открытия выпадающего меню
 		$(".carrotquest_menu_title").click(function (e) {
 			if (e.target.tagName != 'INPUT' && $(e.target).parent().hasClass("carrotquest_menu_title"))
@@ -88,6 +88,7 @@
 					checkbox.attr("checked","checked");
 			else ; // Кликнули по самому чекбоксу, сам поставится
 		});
+		
 	});
 </script>
 
@@ -100,11 +101,20 @@
 	*/
 	
 	$sites = CSite::GetList();
+	$content = json_decode(COption::GetOptionString(CARROTQUEST_MODULE_ID, "cqReplacedTemplates"));
 	while ($site = $sites->Fetch())
 	{
+		$siteName = '';
+		if ($_REQUEST['install'] == 'Y')
+			$siteChecked = "checked";
+		else
+		{
+			$siteName = 'carrotquest_site_'.$site["LID"];
+			$siteChecked = $content[ $siteName ];
+		}
 		?> <li class="carrotquest_menu_title" title="<?= GetMessage('CARROTQUEST_TEMPLATES_SHOW_SITE'); ?>">
 				<span class="carrotquest_menu_arrow"></span>
-				<input type="checkbox" class="carrotquest_menu_checkbox" title="<?= GetMessage('CARROTQUEST_TEMPLATES_MOD_SITE'); ?>">
+				<input type="checkbox" class="carrotquest_menu_checkbox" name="<?= $siteName; ?>" title="<?= GetMessage('CARROTQUEST_TEMPLATES_MOD_SITE'); ?>" <?= $siteChecked; ?>>
 				<span>
 					<?= GetMessage('CARROTQUEST_TEMPLATES_SITE').' "'.$site["NAME"].' (ID = \''.$site["LID"].'\')"'; ?>
 				</span>
@@ -112,12 +122,19 @@
 					<?	$rsTemplates = CSite::GetTemplateList($site["LID"]);
 					while ($template = $rsTemplates->Fetch())
 					{
-						?><li class="carrotquest_menu_item" title="<?= GetMessage('CARROTQUEST_TEMPLATES_MOD_TEMPLATE'); ?>">
-							<input type="checkbox" class="carrotquest_menu_checkbox">
+						$templateName = 'carrotquest_template_'.$site["LID"]."^".$template["TEMPLATE"];
+						if ($_REQUEST['install'] == 'Y')
+							$checked = "checked";
+						else
+							$checked = $content[$templateName];
+						?>
+						<li class="carrotquest_menu_item" title="<?= GetMessage('CARROTQUEST_TEMPLATES_MOD_TEMPLATE'); ?>">
+							<input type="checkbox" name="<?= $name; ?>" class="carrotquest_menu_checkbox" <?= $checked; ?>>
 							<span>
 								<?= GetMessage('CARROTQUEST_TEMPLATES_TEMPLATE').' "'.$template["TEMPLATE"].'"'; ?>
 							</span>
-						</li><?
+						</li>
+						<?
 					}
 					?>
 				</ul>

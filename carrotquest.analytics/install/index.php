@@ -64,23 +64,64 @@ Class carrotquest_analytics extends CModule
 		$step = IntVal($step);
 		$obModule = $this;
 		// 1 шаг установки
-		if($step<2)
+		if($step < 2)
 		{
 			$APPLICATION->IncludeAdminFile(GetMessage("CARROTQUEST_INSTALL_TITLE"), $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$this->MODULE_ID."/install/step1.php");
 		}
 		elseif($step == 2) // Второй шаг установки
 		{
-			if($this->InstallFiles())
+			// Проверяем ключи на валидность
+			if (empty($errors))
+			{
+				if (!array_key_exists('ApiKey', $_REQUEST) || strlen($_REQUEST['ApiKey']) != 32)
+					array_push($errors, "CARROTQUEST_KEY_ERROR");
+				elseif (!array_key_exists('ApiSecret', $_REQUEST) || strlen($_REQUEST['ApiSecret']) != 64)
+					array_push($errors, "CARROTQUEST_KEY_ERROR");
+			};
+
+			if (empty($errors))
+				$APPLICATION->IncludeAdminFile(GetMessage("CARROTQUEST_INSTALL_TITLE"), $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$this->MODULE_ID."/install/step2.php");
+			else
+				$APPLICATION->IncludeAdminFile(GetMessage("CARROTQUEST_INSTALL_TITLE"), $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$this->MODULE_ID."/install/step3.php");
+		}
+		elseif($step == 3) // Третий шаг установки
+		{
+			$templates = array();
+			foreach ($_REQUEST as $key => $value)
+				if (preg_match('carrotquest_site_[\s\S].+',$key) || preg_match('carrotquest_template_[\s\S].+\^.+',$key))
+					$templates[$key] = $value;
+			
+			if(empty($errors) && $this->InstallFiles($templates))
 			{
 				$this->InstallDB();
 				$this->InstallEvents();	
+			};
+			
+			if (!empty($errors) || $_REQUEST['SendEmail'])
+			{
+				$GLOBALS["carrotquest_errors"] = $errors;	
 				
-				if (!empty($errors))
-					$GLOBALS["errors"] = $this->errors;
-					
-				$APPLICATION->IncludeAdminFile(GetMessage("CARROTQUEST_INSTALL_TITLE"), $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$this->MODULE_ID."/install/step2.php");
-					
+				// Стереть ключи
+				if (COption::GetOptionString(CARROTQUEST_MODULE_ID,"cqApiKey"))
+					COption::RemoveOption(CARROTQUEST_MODULE_ID, "cqApiKey");
+				if (COption::GetOptionString(CARROTQUEST_MODULE_ID,"cqApiSecret"))
+					COption::RemoveOption(CARROTQUEST_MODULE_ID, "cqApiSecret");
 			}
+			else
+			{
+				// Пишем параметры модуля
+				COption::SetOptionString(CARROTQUEST_MODULE_ID,"cqApiKey",$_REQUEST['ApiKey']);
+				COption::SetOptionString(CARROTQUEST_MODULE_ID,"cqApiSecret",$_REQUEST['ApiSecret']);
+				COption::SetOptionString(CARROTQUEST_MODULE_ID,"cqReplacedTemplates",$templates);
+				
+				// Чистим кэш сайта, иначе js объект carrotqust появится не сразу
+				$phpCache = new CPHPCache();
+				$phpCache->CleanDir();
+				
+				RegisterModule(CARROTQUEST_MODULE_ID);
+			};
+			
+			$APPLICATION->IncludeAdminFile(GetMessage("CARROTQUEST_INSTALL_TITLE"), $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$this->MODULE_ID."/install/step3.php");
 		}
 	}
 	
@@ -100,7 +141,7 @@ Class carrotquest_analytics extends CModule
 		
 	}
 	
-	function InstallFiles()
+	function InstallFiles($templates = array())
 	{
 		global $APPLICATION;
 		

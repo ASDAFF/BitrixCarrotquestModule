@@ -6,21 +6,18 @@
 		margin: 20px 0 0 0; // Отступ сверху
 		padding: 0;
 	}
-	.carrotquest_menu_checkbox
-	{
-		width: 20px;
-		margin-left: 10px;
-	}
-	.carrotquest_menu_item
-	{
-		cursor: pointer;
-		list-style-type: none;
-	}
+	
 	.carrotquest_menu_title
 	{
 		cursor: pointer;
 		list-style-type: none;
 	}
+	
+	.carrotquest_menu_title input
+	{
+		cursor: pointer;
+	}
+	
 	.carrotquest_menu_arrow
 	{
 		border: 5px solid transparent;	 
@@ -28,6 +25,7 @@
 		position: absolute;
 		margin-top: 4px;
 	}
+	
 	.carrotquest_menu_arrow.carrotquest_menu_opened
 	{
 		border: 5px solid transparent;	 
@@ -36,10 +34,24 @@
 		margin-left: -2px;
 		position: absolute;
 	}
+	
 	.carrotquest_inner_menu
 	{
 		display: none;
 	}
+	
+	.carrotquest_menu_item
+	{
+		list-style-type: none;
+	}
+	
+	.carrotquest_menu_checkbox
+	{
+		width: 20px;
+		margin-left: 10px;
+	}
+		
+	
 	
 </style>
 
@@ -50,8 +62,8 @@
 		$(".carrotquest_menu_title").click(function (e) {
 			if (e.target.tagName != 'INPUT' && $(e.target).parent().hasClass("carrotquest_menu_title"))
 			{
-				$(e.target).toggleClass('carrotquest_menu_opened');
-				$(e.target).parent().find("ul").slideToggle('slow');
+				$(e.currentTarget).find(".carrotquest_menu_arrow").toggleClass('carrotquest_menu_opened');
+				$(e.currentTarget).find("ul").slideToggle('slow');
 			}
 		});
 		
@@ -68,10 +80,13 @@
 		// Обработчик автодобавления галочек
 		$(".carrotquest_menu_item").click(function (e) {
 			var checkbox = $(e.currentTarget).find("input");
-			if (checkbox.prop("checked"))
-				checkbox.removeAttr("checked");
-			else
-				checkbox.attr("checked","checked");
+
+			if (e.target.tagName != "INPUT")
+				if (checkbox.prop("checked"))
+					checkbox.removeAttr("checked");
+				else
+					checkbox.attr("checked","checked");
+			else ; // Кликнули по самому чекбоксу, сам поставится
 		});
 	});
 </script>

@@ -4,7 +4,7 @@ global $DB, $MESS, $APPLICATION;
 // Подключаю файл с константами
 $modulePath = str_replace("\\", "/", __FILE__);
 $modulePath = substr($modulePath, 0, strlen($modulePath) - strlen("/include.php"));
-include_once($modulePath."/constants.php");
+include_once($modulePath."/include/constants.php");
 
 // Этот массив был в исходном модуле, я не стал убирать.
 $GLOBALS["xsd_simple_type"] = array(

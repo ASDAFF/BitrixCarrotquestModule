@@ -4,7 +4,7 @@ global $MESS;
 
 $modulePath = str_replace("\\", "/", __FILE__);
 $modulePath = substr($modulePath, 0, strlen($modulePath) - strlen("/install/index.php")); 
-require_once($modulePath."/constants.php");
+require_once($modulePath."/include/constants.php");
 
 include_once(CARROTQUEST_MODULE_PATH."include.php");
 require(GetLangFileName(CARROTQUEST_MODULE_PATH."lang/", "/install/index.php"));
@@ -38,8 +38,8 @@ Class carrotquest_analytics extends CModule
 		}
 		else
 		{
-			$this->MODULE_VERSION = '1.0.18';
-			$this->MODULE_VERSION_DATE = '06.06.2014';
+			$this->MODULE_VERSION = '1.0.19';
+			$this->MODULE_VERSION_DATE = '08.06.2014';
 		}
 		
 		$this->PARTNER_NAME = "Carrot quest";

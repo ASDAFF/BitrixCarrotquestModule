@@ -1,5 +1,7 @@
-<?if(!check_bitrix_sessid()) return;?>
-<?
+<? 
+	IncludeModuleLangFile(__FILE__); 
+	if(!check_bitrix_sessid()) return;
+
 	// Чистим кэш сайта, иначе js объект carrotqust "потеряется" после удаления модуля
 	$phpCache = new CPHPCache();
 	$phpCache->CleanDir();

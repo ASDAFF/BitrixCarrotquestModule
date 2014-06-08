@@ -1,10 +1,6 @@
-<?
-	
-	if(!check_bitrix_sessid())
-		return;
-	IncludeModuleLangFile(__FILE__);
-	if(!check_bitrix_sessid()) 
-		return;
+<? 
+	IncludeModuleLangFile(__FILE__); 
+	if(!check_bitrix_sessid()) return;
 		
 	// Проверка ключа на валидность. Можно устроить более серьезную проверку, но пока по внешним признакам.
 	

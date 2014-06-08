@@ -45,4 +45,5 @@
 		<tr><td><input type="submit" name="inst" style="display: block;" value="<?echo GetMessage("MOD_INSTALL")?>"></td></tr>
 	</table>
 	<? include(CARROTQUEST_INCLUDE_PATH."installHelp.php"); ?>
+	<? include(CARROTQUEST_INCLUDE_PATH."templateOptions.php"); ?>
 <form>

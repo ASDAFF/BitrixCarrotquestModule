@@ -47,9 +47,12 @@
 	$(document).ready(function () {
 	
 		// Обработчик открытия выпадающего меню
-		$(".carrotquest_menu_arrow").click(function (e) {
-			$(e.target).toggleClass('carrotquest_menu_opened');
-			$(e.target).parent().find("ul").slideToggle('slow');
+		$(".carrotquest_menu_title").click(function (e) {
+			if (e.target.tagName != 'INPUT' && $(e.target).parent().hasClass("carrotquest_menu_title"))
+			{
+				$(e.target).toggleClass('carrotquest_menu_opened');
+				$(e.target).parent().find("ul").slideToggle('slow');
+			}
 		});
 		
 		// Обработчик автодобавления галочек
@@ -60,6 +63,15 @@
 				elements.attr("checked","checked");
 			else
 				elements.removeAttr("checked");		
+		});
+		
+		// Обработчик автодобавления галочек
+		$(".carrotquest_menu_item").click(function (e) {
+			var checkbox = $(e.currentTarget).find("input");
+			if (checkbox.prop("checked"))
+				checkbox.removeAttr("checked");
+			else
+				checkbox.attr("checked","checked");
 		});
 	});
 </script>
@@ -75,9 +87,9 @@
 	$sites = CSite::GetList();
 	while ($site = $sites->Fetch())
 	{
-		?> <li class="carrotquest_menu_title" title="<?= GetMessage('CARROTQUEST_TEMPLATES_MOD_SITE'); ?>">
-				<span class="carrotquest_menu_arrow" title="<?= GetMessage('CARROTQUEST_TEMPLATES_SHOW_SITE'); ?>"></span>
-				<input type="checkbox" class="carrotquest_menu_checkbox">
+		?> <li class="carrotquest_menu_title" title="<?= GetMessage('CARROTQUEST_TEMPLATES_SHOW_SITE'); ?>">
+				<span class="carrotquest_menu_arrow"></span>
+				<input type="checkbox" class="carrotquest_menu_checkbox" title="<?= GetMessage('CARROTQUEST_TEMPLATES_MOD_SITE'); ?>">
 				<span>
 					<?= GetMessage('CARROTQUEST_TEMPLATES_SITE').' "'.$site["NAME"].' (ID = \''.$site["LID"].'\')"'; ?>
 				</span>
@@ -87,7 +99,7 @@
 					{
 						?><li class="carrotquest_menu_item" title="<?= GetMessage('CARROTQUEST_TEMPLATES_MOD_TEMPLATE'); ?>">
 							<input type="checkbox" class="carrotquest_menu_checkbox">
-							<span class="menu-title">
+							<span>
 								<?= GetMessage('CARROTQUEST_TEMPLATES_TEMPLATE').' "'.$template["TEMPLATE"].'"'; ?>
 							</span>
 						</li><?

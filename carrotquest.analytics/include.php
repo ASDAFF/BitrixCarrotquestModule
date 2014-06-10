@@ -33,6 +33,7 @@ CModule::AddAutoloadClasses(
 	array(
 		"CarrotQuestEventHandlers" => "classes/general/CarrotQuestEventHandlers.php",
 		"CarrotQuestApi" => "classes/general/CarrotQuestApi.php",
+		"CarrotQuestUpdater" => "classes/general/CarrotQuestUpdater.php",
 	)
 );
 
@@ -40,6 +41,7 @@ CModule::AddAutoloadClasses(
 * Переменная содержит инициализированный, единый для всей страницы объект <var>CarrotQuestApi</var>
 */
 $GLOBALS['carrotquest_API'] = new CarrotQuestApi();
+$GLOBALS['carrotquest_UPDATER'] = new CarrotQuestUpdater();
 
 // Подключаем язык
 IncludeModuleLangFile(__FILE__);

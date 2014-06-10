@@ -38,8 +38,8 @@ Class carrotquest_analytics extends CModule
 		}
 		else
 		{
-			$this->MODULE_VERSION = '1.1.0';
-			$this->MODULE_VERSION_DATE = '09.06.2014';
+			$this->MODULE_VERSION = '1.1.1';
+			$this->MODULE_VERSION_DATE = '10.06.2014';
 		}
 		
 		$this->PARTNER_NAME = "Carrot quest";
@@ -86,12 +86,7 @@ Class carrotquest_analytics extends CModule
 		}
 		elseif($step == 3) // Третий шаг установки
 		{
-			$templates = array();
-			foreach ($_REQUEST as $key => $value)
-				if (preg_match('carrotquest_site_[\s\S].+',$key) || preg_match('carrotquest_template_[\s\S].+\^.+',$key))
-					$templates[$key] = $value;
-			
-			if(empty($errors) && $this->InstallFiles($templates))
+			if(empty($errors) && $this->InstallFiles())
 			{
 				$this->InstallDB();
 				$this->InstallEvents();	
@@ -112,7 +107,9 @@ Class carrotquest_analytics extends CModule
 				// Пишем параметры модуля
 				COption::SetOptionString(CARROTQUEST_MODULE_ID,"cqApiKey",$_REQUEST['ApiKey']);
 				COption::SetOptionString(CARROTQUEST_MODULE_ID,"cqApiSecret",$_REQUEST['ApiSecret']);
-				COption::SetOptionString(CARROTQUEST_MODULE_ID,"cqReplacedTemplates",$templates);
+				
+				global $carrotquest_UPDATER;
+				$carrotquest_UPDATER->GetListFromRequest();
 				
 				// Чистим кэш сайта, иначе js объект carrotqust появится не сразу
 				$phpCache = new CPHPCache();
@@ -141,25 +138,27 @@ Class carrotquest_analytics extends CModule
 		
 	}
 	
-	function InstallFiles($templates = array())
+	function InstallFiles()
 	{
-		global $APPLICATION;
-		
+		// Копируем JavaScript скрипты
 		CheckDirPath($_SERVER["DOCUMENT_ROOT"]."/bitrix/js/".$this->MODULE_ID."/");	
 		CopyDirFiles(
 			$_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$this->MODULE_ID."/install/js/",
 			$_SERVER["DOCUMENT_ROOT"]."/bitrix/js/".$this->MODULE_ID,
 			true, true);
+		
+		// Копируем кортинки
 		CheckDirPath($_SERVER["DOCUMENT_ROOT"]."/bitrix/images/".$this->MODULE_ID."/");	
 		CopyDirFiles(
 			$_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$this->MODULE_ID."/install/images/", 
 			$_SERVER["DOCUMENT_ROOT"]."/bitrix/images/".$this->MODULE_ID."/", 
 			true, true);
+			
 		
 		// Модифицируем шаблоны "на лету" при инсталляции компонента, чтобы он трекал нужную нам информацию и при этом версия шаблонов была актуальной.
 		// Также установлен обработчик, который выполняет данную операцию при обновлении модулей.
-		CarrotQuestEventHandlers::LoadCatalogModuleTemplates();
-		CarrotQuestEventHandlers::LoadSaleModuleTemplates();
+		//$carrotquest_UPDATER->LoadCatalogModuleTemplates();
+		//$carrotquest_UPDATER->LoadSaleModule();
 	
 		CopyDirFiles(
 			$_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$this->MODULE_ID."/install/templates/", 
@@ -219,7 +218,7 @@ Class carrotquest_analytics extends CModule
 	
 	function UnInstallEvents()
 	{
-		UnRegisterModuleDependences("main", "OnPageStart", $this->MODULE_ID, "CarrotQuestEventHandlers", "IncludeHandler");
+		UnRegisterModuleDependences("main", "OnProlog", $this->MODULE_ID, "CarrotQuestEventHandlers", "IncludeHandler");
 		UnRegisterModuleDependences("main", "OnAfterEpilog", $this->MODULE_ID, "CarrotQuestEventHandlers", "ConnectHandler");
 		UnRegisterModuleDependences("sale", "OnBeforeOrderAdd", $this->MODULE_ID, "CarrotQuestEventHandlers", "OnBeforeOrderAddHandler");
 		UnRegisterModuleDependences("sale", "OnOrderAdd", $this->MODULE_ID, "CarrotQuestEventHandlers", "OnOrderAddHandler");

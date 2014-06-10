@@ -38,7 +38,7 @@ Class carrotquest_analytics extends CModule
 		}
 		else
 		{
-			$this->MODULE_VERSION = '1.1.1';
+			$this->MODULE_VERSION = '1.1.2';
 			$this->MODULE_VERSION_DATE = '10.06.2014';
 		}
 		
@@ -110,6 +110,7 @@ Class carrotquest_analytics extends CModule
 				
 				global $carrotquest_UPDATER;
 				$carrotquest_UPDATER->GetListFromRequest();
+				$carrotquest_UPDATER->UpdateAllTemplates();
 				
 				// Чистим кэш сайта, иначе js объект carrotqust появится не сразу
 				$phpCache = new CPHPCache();
@@ -124,8 +125,9 @@ Class carrotquest_analytics extends CModule
 	
 	function DoUninstall()
 	{
-		global $DOCUMENT_ROOT, $APPLICATION;
+		global $DOCUMENT_ROOT, $APPLICATION, $carrotquest_UPDATER;
 
+		$carrotquest_UPDATER->RestoreAllTemplates();
         COption::RemoveOption("cqApiKey");
 		COption::RemoveOption("cqApiSecret");
 		
@@ -218,7 +220,7 @@ Class carrotquest_analytics extends CModule
 	
 	function UnInstallEvents()
 	{
-		UnRegisterModuleDependences("main", "OnProlog", $this->MODULE_ID, "CarrotQuestEventHandlers", "IncludeHandler");
+		UnRegisterModuleDependences("main", "OnPageStart", $this->MODULE_ID, "CarrotQuestEventHandlers", "IncludeHandler");
 		UnRegisterModuleDependences("main", "OnAfterEpilog", $this->MODULE_ID, "CarrotQuestEventHandlers", "ConnectHandler");
 		UnRegisterModuleDependences("sale", "OnBeforeOrderAdd", $this->MODULE_ID, "CarrotQuestEventHandlers", "OnBeforeOrderAddHandler");
 		UnRegisterModuleDependences("sale", "OnOrderAdd", $this->MODULE_ID, "CarrotQuestEventHandlers", "OnOrderAddHandler");

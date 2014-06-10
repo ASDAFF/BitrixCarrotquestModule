@@ -14,7 +14,7 @@ class CarrotQuestEventHandlers
 	{
 		// Тестим класс
 		global $carrotquest_UPDATER;
-		$carrotquest_UPDATER->UpdateAllTemplates();
+		//$carrotquest_UPDATER->UpdateAllTemplates();
 		
 		return true;
 	}

@@ -1,9 +1,9 @@
-<? 
+п»ї<? 
 IncludeModuleLangFile( __FILE__ );
 CModule::IncludeModule('sale');
 
 /**
-* Класс содержит обработчики событий различных модулей, используемых в Carrot Quest.
+* РљР»Р°СЃСЃ СЃРѕРґРµСЂР¶РёС‚ РѕР±СЂР°Р±РѕС‚С‡РёРєРё СЃРѕР±С‹С‚РёР№ СЂР°Р·Р»РёС‡РЅС‹С… РјРѕРґСѓР»РµР№, РёСЃРїРѕР»СЊР·СѓРµРјС‹С… РІ Carrot Quest.
 */
 class CarrotQuestUpdater
 {	
@@ -16,7 +16,7 @@ class CarrotQuestUpdater
 		$this->MODULE_ID = CARROTQUEST_MODULE_ID;
 		$this->SetTemplateList();
 		$this->MODIFICATIONS  = array(
-			// Детальное описание товара
+			// Р”РµС‚Р°Р»СЊРЅРѕРµ РѕРїРёСЃР°РЅРёРµ С‚РѕРІР°СЂР°
 			"catalog" => array(
 				"name" => "catalog",
 				"path" => $_SERVER["DOCUMENT_ROOT"]."/bitrix/components/bitrix/catalog/templates/.default/", 
@@ -24,8 +24,7 @@ class CarrotQuestUpdater
 					array (
 						"file" => "bitrix/catalog.element/.default/template.php",
 						"after" => "#END#",
-						"data" =>	"<!-- CarrotQuest Detailed Product Info Event Start -->\n".
-									"<? //CModule::IncludeModule('".CARROTQUEST_MODULE_ID."');\n".
+						"data" =>	"<? //Detailed Product Info Event\n".
 									"	if (COption::GetOptionString('".CARROTQUEST_MODULE_ID."', 'cqTrackProductDetails')) { ?>".
 									"		<script>\n".
 									"			carrotquest.track('".'$product_view'."', {\n".
@@ -36,12 +35,11 @@ class CarrotQuestUpdater
 									"				fullObject: ".'<?= json_encode($arResult); ?>'."\n".
 									"			});\n".
 									"		</script>\n".
-									"	<?} ?>\n".
-									"<!-- CarrotQuest Detailed Product Info Event End -->",
+									"	<?} ?>\n",
 					),
 				),
 			),
-			// Корзина
+			// РљРѕСЂР·РёРЅР°
 			"sale.basket.basket" => array(
 				"name" => "sale.basket.basket",
 				"path" => $_SERVER["DOCUMENT_ROOT"]."/bitrix/components/bitrix/sale.basket.basket/templates/.default/", 
@@ -49,54 +47,91 @@ class CarrotQuestUpdater
 					array (
 						"file" => "template.php",
 						"after" => "#END#",
-						"data" =>	"<!-- CarrotQuest Basket Visit Event Start -->\n".
-									"<?  //CModule::IncludeModule('".CARROTQUEST_MODULE_ID."');\n".
+						"data" =>	"<?  //Basket Visit Event\n".
 									"	 if (COption::GetOptionString('".CARROTQUEST_MODULE_ID."', 'cqTrackCartVisit')) { ?>\n".
 									"		<script>\n".
 									"			carrotquest.track('Cart')\n".
 									"		</script>\n".
-									"	<?} ?>".
-									"<!-- CarrotQuest Basket Visit Event End -->",
+									"	<?} ?>\n",
 					),
 				),
 			),
-			/*"sale.order.ajax" => array(
+			"sale.order.ajax" => array(
 				"name" => "sale.order.ajax",
 				"path" => $_SERVER["DOCUMENT_ROOT"]."/bitrix/components/bitrix/sale.order.ajax/templates/.default/", 
 				"data" => array(
 					array (
-						"file" => "result_modifier.php",
-						"after" => "#END#",
-						"data" =>	"",
-					),
-					array (
 						"file" => "summary.php",
 						"after" => "#END#",
-						"data" =>	"",
+						"data" =>	'<script>'."\n".
+									'<? // Pre-order event'."\n".
+									'	if (COption::GetOptionString(CARROTQUEST_MODULE_ID,"cqTrackPreOrder"))'."\n".
+									'	{ ?>'."\n".
+									'		carrotquest.track("Pre Order");'."\n".
+									'	<? } '."\n".
+									'	/* Carrot quest discount field */'."\n".
+									'	if (COption::GetOptionString(CARROTQUEST_MODULE_ID,"cqActivateBonus") && doubleval($arResult["CARROTQUEST_DISCOUNT_PRICE"]) > 0)'."\n".
+									'	{'."\n".
+									'		?>'."\n".
+									'			var itogo = $(".bx_ordercart_order_sum").find("tr").last();'."\n".
+									'			var tr = $("<tr>");'."\n".
+									'			var td1 = $("<td>", {class: "custom_t1 itog", colspan: <?=$colspan?>}).html("<?=GetMessage("SOA_TEMPL_SUM_CQ_DISCOUNT")?>");'."\n".
+									'			var td2 = $("<td>", {class: "custom_t2 price"}).html("<?echo $arResult["CARROTQUEST_DISCOUNT_PRICE_FORMATED"]?>");'."\n".
+									'			tr.append(td1);'."\n".
+									'			tr.append(td2);'."\n".
+									'			itogo.prepend(tr);'."\n".
+									'		<?'."\n".
+									'	}?>'."\n".
+									'</script>',
+					),
+					array (
+						"file" => "result_modifier.php",
+						"after" => "#END#",
+						"data" =>	'<?'."\n".
+									'	// Count discount'."\n".
+									'	global $carrotquest_API;'."\n".
+									'	if (COption::GetOptionString(CARROTQUEST_MODULE_ID,"cqActivateBonus"))'."\n".
+									'		$arResult = $carrotquest_API->CalcDiscount($arResult);'."\n".
+									'	// When order is done, items are not present. So we write it to cookie'."\n".
+									'	if (COption::GetOptionString(CARROTQUEST_MODULE_ID,"cqTrackOrderConfirm") != "")'."\n".
+									'		CarrotQuestEventHandlers::SetBasketItemsCookie($arResult["BASKET_ITEMS"])'."\n".
+									'?>',
 					),
 					array (
 						"file" => "confirm.php",
 						"after" => "#END#",
-						"data" =>	"",
+						"data" =>	'<? Track Order Event -->'."\n".
+									'	if (COption::GetOptionString(CARROTQUEST_MODULE_ID, "cqActivateBonus")) { ?>'."\n".
+									'	<script>'."\n".
+									'		var items = carrotquest_cookie.get("carrotquest_basket_items");'."\n".
+									'		var orderID = carrotquest_cookie.get("carrotquest_order_id");'."\n".
+									'		if (items && orderID) // than track order'."\n".
+									'		{'."\n".
+									'			carrotquest.trackOrder(JSON.parse(items), orderID);'."\n".
+									'			carrotquest_cookie.delete("carrotquest_basket_items");'."\n".
+									'			carrotquest_cookie.delete("carrotquest_order_id");'."\n".
+									'		}'."\n".
+									'	</script>'."\n".
+									'<? } ?>',
 					),
 					array (
 						"file" => "lang/en/template.php",
 						"after" => "#END#",
-						"data" =>	"",
+						"data" =>	'<? $MESS["SOA_TEMPL_SUM_CQ_DISCOUNT"] = "Carrot Quest discount"; ?>',
 					),
 					array (
 						"file" => "lang/ru/template.php",
 						"after" => "#END#",
-						"data" =>	"",
+						"data" =>	iconv('utf-8','windows-1251','<? $MESS["SOA_TEMPL_SUM_CQ_DISCOUNT"] = "РЎРєРёРґРєР° Carrot Quest"; ?>'),
 					),
 				),
-			),*/
+			),
 		);
 	}
 
-	function SetTemplateList ($object = false)
+	public function SetTemplateList ($object = false)
 	{
-		// Формируем массив		
+		// Р¤РѕСЂРјРёСЂСѓРµРј РјР°СЃСЃРёРІ		
 		$type = gettype($object);
 		if (!$object)
 			$this->TEMPLATE_LIST = json_decode(COption::GetOptionString($this->MODULE_ID, "cqReplacedTemplates"));
@@ -112,7 +147,7 @@ class CarrotQuestUpdater
 		return true;
 	}
 	
-	function GetListFromRequest ()
+	public function GetListFromRequest ()
 	{
 		$this->TEMPLATE_LIST = array();
 
@@ -122,7 +157,7 @@ class CarrotQuestUpdater
 				$this->TEMPLATE_LIST[$matches[1]] = array(
 					"NAME" => $matches[1],
 				);
-			/* Для выпадающего списка
+			/* Р”Р»СЏ РІС‹РїР°РґР°СЋС‰РµРіРѕ СЃРїРёСЃРєР°
 			if (preg_match('/carrotquest_site_([\s\S]+)/', $key, $matches))
 				$this->TEMPLATE_LIST[$key] = array(
 					"site" => $matches[1],
@@ -139,21 +174,22 @@ class CarrotQuestUpdater
 
 		return true;
 	}
-	function phpIsClosed ($fileName)
+	
+	private function phpIsClosed ($fileName)
 	{
 		/*
 		$status
-		0 - все закрыто
-		1 - предыдущий символ <
-		2 - действует открывающая последовательность <?
-		3 - после открывающей последоватлеьности 2 был символ ? (предыдущий). Если текущий >, сбрасываем в 0.
+		0 - РІСЃРµ Р·Р°РєСЂС‹С‚Рѕ
+		1 - РїСЂРµРґС‹РґСѓС‰РёР№ СЃРёРјРІРѕР» <
+		2 - РґРµР№СЃС‚РІСѓРµС‚ РѕС‚РєСЂС‹РІР°СЋС‰Р°СЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ <?
+		3 - РїРѕСЃР»Рµ РѕС‚РєСЂС‹РІР°СЋС‰РµР№ РїРѕСЃР»РµРґРѕРІР°С‚Р»РµСЊРЅРѕСЃС‚Рё 2 Р±С‹Р» СЃРёРјРІРѕР» ? (РїСЂРµРґС‹РґСѓС‰РёР№). Р•СЃР»Рё С‚РµРєСѓС‰РёР№ >, СЃР±СЂР°СЃС‹РІР°РµРј РІ 0.
 		
 		$commentStatus
-		0 - нет комментария
-		1 - был слеш / вне комментария
-		2 - в текущий момент действует комментарий //
-		3 - в текущий момент комментарий /*
-		4 - внутри комментария 3 была * предыдущим символом
+		0 - РЅРµС‚ РєРѕРјРјРµРЅС‚Р°СЂРёСЏ
+		1 - Р±С‹Р» СЃР»РµС€ / РІРЅРµ РєРѕРјРјРµРЅС‚Р°СЂРёСЏ
+		2 - РІ С‚РµРєСѓС‰РёР№ РјРѕРјРµРЅС‚ РґРµР№СЃС‚РІСѓРµС‚ РєРѕРјРјРµРЅС‚Р°СЂРёР№ //
+		3 - РІ С‚РµРєСѓС‰РёР№ РјРѕРјРµРЅС‚ РєРѕРјРјРµРЅС‚Р°СЂРёР№ /*
+		4 - РІРЅСѓС‚СЂРё РєРѕРјРјРµРЅС‚Р°СЂРёСЏ 3 Р±С‹Р»Р° * РїСЂРµРґС‹РґСѓС‰РёРј СЃРёРјРІРѕР»РѕРј
 		*/
 		$length = filesize($fileName);
 		$content = file_get_contents($fileName);
@@ -233,23 +269,23 @@ class CarrotQuestUpdater
 		return ($status != 2);
 	}
 	
-	function UpdateAllTemplates ()
+	public function UpdateAllTemplates ()
 	{
 		/**
-			Полная структура шаблона:
-			"NAME" - имя шаблона
-			"PATH" - путь к шаблону
-			"SITE_BACKUP_PATH" - путь
-			"MODIFICATIONS" - массив-список изменений, произведенных с файлами шаблона. Структура элемента:
-				"COMPONENT_TEMPLATE_NAME" - имя шаблона компонента
-				"COMPONENT_TEMPLATE_PATH" - путь к шаблону компонента
-				"COPIED_BY_CARROTQUEST" - был ли шаблон компонента целиком скопирован carrotquest-ом
-				"FILES_CREATED" - список путей файлов внутри шаблона, созданных (скопированных) carrotquest-ом. Не учитывает копирование шаблона целиком ("COPIED_BY_CARROTQUEST" = true)
-				"FILES_MODIFIED" - список путей файлов, модифицированных carrotquest-ом.
+			РџРѕР»РЅР°СЏ СЃС‚СЂСѓРєС‚СѓСЂР° С€Р°Р±Р»РѕРЅР°:
+			"NAME" - РёРјСЏ С€Р°Р±Р»РѕРЅР°
+			"PATH" - РїСѓС‚СЊ Рє С€Р°Р±Р»РѕРЅСѓ
+			"SITE_BACKUP_PATH" - РїСѓС‚СЊ
+			"MODIFICATIONS" - РјР°СЃСЃРёРІ-СЃРїРёСЃРѕРє РёР·РјРµРЅРµРЅРёР№, РїСЂРѕРёР·РІРµРґРµРЅРЅС‹С… СЃ С„Р°Р№Р»Р°РјРё С€Р°Р±Р»РѕРЅР°. РЎС‚СЂСѓРєС‚СѓСЂР° СЌР»РµРјРµРЅС‚Р°:
+				"COMPONENT_TEMPLATE_NAME" - РёРјСЏ С€Р°Р±Р»РѕРЅР° РєРѕРјРїРѕРЅРµРЅС‚Р°
+				"COMPONENT_TEMPLATE_PATH" - РїСѓС‚СЊ Рє С€Р°Р±Р»РѕРЅСѓ РєРѕРјРїРѕРЅРµРЅС‚Р°
+				"COPIED_BY_CARROTQUEST" - Р±С‹Р» Р»Рё С€Р°Р±Р»РѕРЅ РєРѕРјРїРѕРЅРµРЅС‚Р° С†РµР»РёРєРѕРј СЃРєРѕРїРёСЂРѕРІР°РЅ carrotquest-РѕРј
+				"FILES_CREATED" - СЃРїРёСЃРѕРє РїСѓС‚РµР№ С„Р°Р№Р»РѕРІ РІРЅСѓС‚СЂРё С€Р°Р±Р»РѕРЅР°, СЃРѕР·РґР°РЅРЅС‹С… (СЃРєРѕРїРёСЂРѕРІР°РЅРЅС‹С…) carrotquest-РѕРј. РќРµ СѓС‡РёС‚С‹РІР°РµС‚ РєРѕРїРёСЂРѕРІР°РЅРёРµ С€Р°Р±Р»РѕРЅР° С†РµР»РёРєРѕРј ("COPIED_BY_CARROTQUEST" = true)
+				"FILES_MODIFIED" - СЃРїРёСЃРѕРє РїСѓС‚РµР№ С„Р°Р№Р»РѕРІ, РјРѕРґРёС„РёС†РёСЂРѕРІР°РЅРЅС‹С… carrotquest-РѕРј.
 		*/
-		foreach($this->TEMPLATE_LIST as $tplName =>& $tpl)
+		foreach($this->TEMPLATE_LIST as $tplName => & $tpl)
 		{ 
-			// Создаем backup
+			// РЎРѕР·РґР°РµРј backup
 			$tpl = (array)$tpl;
 			$tpl["SITE_BACKUP_PATH"] = CARROTQUEST_BACKUP_PATH.$tplName;
 			$tpl["PATH"] = $_SERVER["DOCUMENT_ROOT"]."/bitrix/templates/".$tplName;
@@ -259,7 +295,7 @@ class CarrotQuestUpdater
 				$tpl["SITE_BACKUP_PATH"],
 				true, true);
 			
-			// Модифицируем шаблон по нашим правилам
+			// РњРѕРґРёС„РёС†РёСЂСѓРµРј С€Р°Р±Р»РѕРЅ РїРѕ РЅР°С€РёРј РїСЂР°РІРёР»Р°Рј
 			$tpl['MODIFICATIONS'] = array();
 			
 			foreach ($this->MODIFICATIONS as $value)
@@ -269,31 +305,31 @@ class CarrotQuestUpdater
 		COption::SetOptionString(CARROTQUEST_MODULE_ID,"cqReplacedTemplates",json_encode($this->TEMPLATE_LIST));
 	}
 	
-	function RestoreAllTemplates ()
+	public function RestoreAllTemplates ()
 	{
 		foreach($this->TEMPLATE_LIST as $tpl)
 			$this->RestoreTemplate($tpl);
 	}
 	
 	/**
-	* Переопределяет текущий шаблон вывода компонента Bitrix.
-	* При необходимости копирует его из стандартных шаблонов в папки /bitrix/templates/имя_шаблона_сайта/components/bitrix/
-	* <b>Параметры:</b>
-	* <var>$path</var> - путь к шаблону, который необходимо подменить.
-	* <var>$data</var> - массив данных, которые надо вписать в шаблон. В формате <code>{file: "template.php", after: "regexp", data: ""}</code>
-	* Путь к файлу - относительно $path.
-	* Поле after может содержать ключевое слово #END# - тогда запись будет осуществлена в конец файла.
-	* <b>Возвращаемое значение:</b>
-	* true - в случае успеха обновления, false - в случае неудачи.
+	* РџРµСЂРµРѕРїСЂРµРґРµР»СЏРµС‚ С‚РµРєСѓС‰РёР№ С€Р°Р±Р»РѕРЅ РІС‹РІРѕРґР° РєРѕРјРїРѕРЅРµРЅС‚Р° Bitrix.
+	* РџСЂРё РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚Рё РєРѕРїРёСЂСѓРµС‚ РµРіРѕ РёР· СЃС‚Р°РЅРґР°СЂС‚РЅС‹С… С€Р°Р±Р»РѕРЅРѕРІ РІ РїР°РїРєРё /bitrix/templates/РёРјСЏ_С€Р°Р±Р»РѕРЅР°_СЃР°Р№С‚Р°/components/bitrix/
+	* <b>РџР°СЂР°РјРµС‚СЂС‹:</b>
+	* <var>$path</var> - РїСѓС‚СЊ Рє С€Р°Р±Р»РѕРЅСѓ, РєРѕС‚РѕСЂС‹Р№ РЅРµРѕР±С…РѕРґРёРјРѕ РїРѕРґРјРµРЅРёС‚СЊ.
+	* <var>$data</var> - РјР°СЃСЃРёРІ РґР°РЅРЅС‹С…, РєРѕС‚РѕСЂС‹Рµ РЅР°РґРѕ РІРїРёСЃР°С‚СЊ РІ С€Р°Р±Р»РѕРЅ. Р’ С„РѕСЂРјР°С‚Рµ <code>{file: "template.php", after: "regexp", data: ""}</code>
+	* РџСѓС‚СЊ Рє С„Р°Р№Р»Сѓ - РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ $path.
+	* РџРѕР»Рµ after РјРѕР¶РµС‚ СЃРѕРґРµСЂР¶Р°С‚СЊ РєР»СЋС‡РµРІРѕРµ СЃР»РѕРІРѕ #END# - С‚РѕРіРґР° Р·Р°РїРёСЃСЊ Р±СѓРґРµС‚ РѕСЃСѓС‰РµСЃС‚РІР»РµРЅР° РІ РєРѕРЅРµС† С„Р°Р№Р»Р°.
+	* <b>Р’РѕР·РІСЂР°С‰Р°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ:</b>
+	* true - РІ СЃР»СѓС‡Р°Рµ СѓСЃРїРµС…Р° РѕР±РЅРѕРІР»РµРЅРёСЏ, false - РІ СЃР»СѓС‡Р°Рµ РЅРµСѓРґР°С‡Рё.
 	*/
-	function ModifyTemplate ($componentTemplateName, $path, $data, & $templateToModify)
+	public function ModifyTemplate ($componentTemplateName, $path, $data, & $templateToModify)
 	{
 		$result = true;
 		
-		// Путь к шаблонам компонентов для данного шаблона сайта
+		// РџСѓС‚СЊ Рє С€Р°Р±Р»РѕРЅР°Рј РєРѕРјРїРѕРЅРµРЅС‚РѕРІ РґР»СЏ РґР°РЅРЅРѕРіРѕ С€Р°Р±Р»РѕРЅР° СЃР°Р№С‚Р°
 		$componentTemplatePath = $templateToModify["PATH"].'/components/bitrix/'.$componentTemplateName."/";
 
-		// Собираем инфо о модификации
+		// РЎРѕР±РёСЂР°РµРј РёРЅС„Рѕ Рѕ РјРѕРґРёС„РёРєР°С†РёРё
 		$componentTemplateInfo = array(
 			"COMPONENT_TEMPLATE_NAME" => $componentTemplateName,
 			"COMPONENT_TEMPLATE_PATH" => $componentTemplatePath,
@@ -301,13 +337,13 @@ class CarrotQuestUpdater
 
 		if (!file_exists($componentTemplatePath))
 		{
-			// Копируем шаблон
+			// РљРѕРїРёСЂСѓРµРј С€Р°Р±Р»РѕРЅ
 			CheckDirPath($componentTemplatePath);
 			$result = CopyDirFiles($path, $componentTemplatePath, true, true);
 			$componentTemplateInfo["COPIED_BY_CARROTQUEST"] = true;
 		}
 		else 
-			$componentTemplateInfo["COPIED_BY_CARROTQUEST"] = false; // Будем модифицировать шаблон пользователя
+			$componentTemplateInfo["COPIED_BY_CARROTQUEST"] = false; // Р‘СѓРґРµРј РјРѕРґРёС„РёС†РёСЂРѕРІР°С‚СЊ С€Р°Р±Р»РѕРЅ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
 		
 		if ($result)
 		{
@@ -315,30 +351,34 @@ class CarrotQuestUpdater
 			$componentTemplateInfo['FILES_MODIFIED'] = array();
 			foreach ($data as $change)
 			{
-				// Путь к файлу, который будем изменять
+				// РџСѓС‚СЊ Рє С„Р°Р№Р»Сѓ, РєРѕС‚РѕСЂС‹Р№ Р±СѓРґРµРј РёР·РјРµРЅСЏС‚СЊ
 				$file = $componentTemplatePath.$change["file"];
 				
 				if (!file_exists($file))
 				{
-					// Копируем из исходного шаблона
-					$result = copy($file, $path.$change["file"]);
+					if (file_exists($path.$change["file"]))
+						// РљРѕРїРёСЂСѓРµРј РёР· РёСЃС…РѕРґРЅРѕРіРѕ С€Р°Р±Р»РѕРЅР°
+						$result = copy($file, $path.$change["file"]);
+					else
+						// РЎРѕР·РґР°РµРј РЅРѕРІС‹Р№ РїСѓСЃС‚РѕР№ С„Р°Р№Р»
+						$result = RewriteFile($file,'');
 					$componentTemplateInfo['FILES_CREATED'][] = $file;
 				};
 				
 				if ($result)
 				{
 					$componentTemplateInfo['FILES_MODIFIED'][] = $file;
-					// Обновляем содержимое файла
+					// РћР±РЅРѕРІР»СЏРµРј СЃРѕРґРµСЂР¶РёРјРѕРµ С„Р°Р№Р»Р°
 					$insert = "\n<!-- Carrot Quest Insert Start -->\n".$change["data"]."\n<!-- Carrot Quest Insert End -->\n";	
 					
-					// Вставляем текст
+					// Р’СЃС‚Р°РІР»СЏРµРј С‚РµРєСЃС‚
 					if ($change["after"] == "#END#")
 					{
-						// Необходимо закрыть php если он был не закрыт...
+						// РќРµРѕР±С…РѕРґРёРјРѕ Р·Р°РєСЂС‹С‚СЊ php РµСЃР»Рё РѕРЅ Р±С‹Р» РЅРµ Р·Р°РєСЂС‹С‚...
 						if (!$this->phpIsClosed($file))
 							$insert = "\n?>".$insert;
 						
-						$result = (file_put_contents($file, $insert, FILE_APPEND) == strlen($insert));
+						file_put_contents($file, $insert, FILE_APPEND);
 					}
 					else
 					{
@@ -355,7 +395,7 @@ class CarrotQuestUpdater
 			};
 		};
 			
-		// Если успех - сохраняем изменения. Иначе откат к изначальному состоянию.
+		// Р•СЃР»Рё СѓСЃРїРµС… - СЃРѕС…СЂР°РЅСЏРµРј РёР·РјРµРЅРµРЅРёСЏ. РРЅР°С‡Рµ РѕС‚РєР°С‚ Рє РёР·РЅР°С‡Р°Р»СЊРЅРѕРјСѓ СЃРѕСЃС‚РѕСЏРЅРёСЋ.
 		$templateToModify['MODIFICATIONS'][] = $componentTemplateInfo;
 		if (!$result)
 			$this->RestoreTemplate($templateToModify);
@@ -363,16 +403,16 @@ class CarrotQuestUpdater
 		return $result;
 	}
 	
-	function RestoreTemplate ($tpl)
+	public function RestoreTemplate ($tpl)
 	{
 		$tpl = (array)$tpl;
-		// Нейтрализуем изменения
+		// РќРµР№С‚СЂР°Р»РёР·СѓРµРј РёР·РјРµРЅРµРЅРёСЏ
 		foreach ($tpl["MODIFICATIONS"] as $mod)
 		{
 			foreach ($mod -> FILES_MODIFIED as $file)
 			{
 				$content = file_get_contents ($file);
-				$pattern = "~<!-- Carrot Quest Insert Start -->([\s\S]*?)<!-- Carrot Quest Insert End -->~is";
+				$pattern = "~\n<!-- Carrot Quest Insert Start -->([\s\S]*?)<!-- Carrot Quest Insert End -->\n~is";
 				$content = preg_replace($pattern, "", $content);
 				RewriteFile($file, $content);
 			}

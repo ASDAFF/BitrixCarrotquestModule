@@ -169,4 +169,30 @@ class CarrotQuestEventHandlers
 		if (in_array("catalog", $array["arSuccessModules"]))
 			$carrotquest_UPDATER.LoadCatalogModuleTemplates();
 	}
+	
+	static function SetBasketItemsCookie ($items)
+	{
+		$cookie = array();
+		
+		// Кодировка Windows-1251 распознается некорректно...
+		$lang = CLanguage::GetList($by="active", $order="desc", Array("NAME" => "russian"));
+		$lang = $lang->Fetch();
+			
+		foreach ($items as $value)
+		{
+			$item = array(
+				"objectId"		=> $value['ID'],
+				"objectName"	=> $value['NAME'],
+				"objectUrl"		=> $_SERVER['HTTP_HOST'].$value['DETAIL_PAGE_URL'],
+				"quantity"		=> $value['QUANTITY'],
+				"price"			=> $value['PRICE'],
+			);
+			
+			if ($lang['CHARSET'] == 'windows-1251')
+				CarrotQuestEventHandlers::ToUTF($item);
+				
+			array_push($cookie,$item);
+		};
+		setcookie('carrotquest_basket_items', json_encode($cookie), 0, "/");
+	}
 }

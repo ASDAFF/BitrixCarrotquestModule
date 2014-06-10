@@ -38,7 +38,7 @@ Class carrotquest_analytics extends CModule
 		}
 		else
 		{
-			$this->MODULE_VERSION = '1.1.2';
+			$this->MODULE_VERSION = '1.1.3';
 			$this->MODULE_VERSION_DATE = '10.06.2014';
 		}
 		

@@ -386,7 +386,7 @@ $bShowNameWithPicture = ($bDefaultColumns) ? true : false; // flat to show name 
 						<?
 					}
 					/* Поле, выводящее скидку CarrotQuest */
-					if (doubleval($arResult["CARROTQUEST_DISCOUNT_PRICE"]) > 0)
+					if (COption::GetOptionString(CARROTQUEST_MODULE_ID,"cqActivateBonus") && doubleval($arResult["CARROTQUEST_DISCOUNT_PRICE"]) > 0)
 					{
 						?>
 						<tr>

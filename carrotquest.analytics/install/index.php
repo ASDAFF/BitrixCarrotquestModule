@@ -38,8 +38,8 @@ Class carrotquest_analytics extends CModule
 		}
 		else
 		{
-			$this->MODULE_VERSION = '1.1.3';
-			$this->MODULE_VERSION_DATE = '10.06.2014';
+			$this->MODULE_VERSION = '1.1.4';
+			$this->MODULE_VERSION_DATE = '11.06.2014';
 		}
 		
 		$this->PARTNER_NAME = "Carrot quest";
@@ -80,7 +80,12 @@ Class carrotquest_analytics extends CModule
 			};
 
 			if (empty($errors))
+			{
+				// Пишем параметры модуля
+				COption::SetOptionString(CARROTQUEST_MODULE_ID,"cqApiKey",$_REQUEST['ApiKey']);
+				COption::SetOptionString(CARROTQUEST_MODULE_ID,"cqApiSecret",$_REQUEST['ApiSecret']);
 				$APPLICATION->IncludeAdminFile(GetMessage("CARROTQUEST_INSTALL_TITLE"), $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$this->MODULE_ID."/install/step2.php");
+			}
 			else
 				$APPLICATION->IncludeAdminFile(GetMessage("CARROTQUEST_INSTALL_TITLE"), $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$this->MODULE_ID."/install/step3.php");
 		}
@@ -103,15 +108,7 @@ Class carrotquest_analytics extends CModule
 					COption::RemoveOption(CARROTQUEST_MODULE_ID, "cqApiSecret");
 			}
 			else
-			{
-				// Пишем параметры модуля
-				COption::SetOptionString(CARROTQUEST_MODULE_ID,"cqApiKey",$_REQUEST['ApiKey']);
-				COption::SetOptionString(CARROTQUEST_MODULE_ID,"cqApiSecret",$_REQUEST['ApiSecret']);
-				
-				global $carrotquest_UPDATER;
-				$carrotquest_UPDATER->GetListFromRequest();
-				$carrotquest_UPDATER->UpdateAllTemplates();
-				
+			{						
 				// Чистим кэш сайта, иначе js объект carrotqust появится не сразу
 				$phpCache = new CPHPCache();
 				$phpCache->CleanDir();
@@ -125,10 +122,9 @@ Class carrotquest_analytics extends CModule
 	
 	function DoUninstall()
 	{
-		global $DOCUMENT_ROOT, $APPLICATION, $carrotquest_UPDATER;
+		global $DOCUMENT_ROOT, $APPLICATION;
 
-		$carrotquest_UPDATER->RestoreAllTemplates();
-        COption::RemoveOption("cqApiKey");
+		COption::RemoveOption("cqApiKey");
 		COption::RemoveOption("cqApiSecret");
 		
 		$this->UnInstallFiles();
@@ -155,37 +151,31 @@ Class carrotquest_analytics extends CModule
 			$_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$this->MODULE_ID."/install/images/", 
 			$_SERVER["DOCUMENT_ROOT"]."/bitrix/images/".$this->MODULE_ID."/", 
 			true, true);
-			
-		
+				
 		// Модифицируем шаблоны "на лету" при инсталляции компонента, чтобы он трекал нужную нам информацию и при этом версия шаблонов была актуальной.
 		// Также установлен обработчик, который выполняет данную операцию при обновлении модулей.
-		//$carrotquest_UPDATER->LoadCatalogModuleTemplates();
-		//$carrotquest_UPDATER->LoadSaleModule();
-	
-		CopyDirFiles(
-			$_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$this->MODULE_ID."/install/templates/", 
-			$_SERVER["DOCUMENT_ROOT"]."/bitrix/templates/.default/components/bitrix/", 
-			true, true);
+		global $carrotquest_UPDATER;
+
+		$carrotquest_UPDATER->GetListFromRequest();
+		$carrotquest_UPDATER->UpdateAllTemplates();
+		
 		return true;
 	}
 	
 	function UnInstallFiles()
 	{
-		global $APPLICATION;
+		global $APPLICATION, $carrotquest_UPDATER;
 
+		$carrotquest_UPDATER->RestoreAllTemplates();
+		
 		DeleteDirFilesEx("/bitrix/js/".$this->MODULE_ID."/");
 		DeleteDirFilesEx("/bitrix/images/".$this->MODULE_ID."/");
 		
-		// Переопределенные темплейты компонентов
-		DeleteDirFilesEx("/bitrix/templates/.default/components/bitrix/sale.order.ajax/");
-		DeleteDirFilesEx("/bitrix/templates/.default/components/bitrix/catalog/");
-		DeleteDirFilesEx("/bitrix/templates/.default/components/bitrix/sale.basket.basket/");
 		return true;
 	}	
 	
 	function InstallDB()
 	{
-		
 		return true;
 	}
 	
@@ -197,8 +187,8 @@ Class carrotquest_analytics extends CModule
 
 	function InstallEvents()
 	{
-		// По идее, js надо включать в include.php. Без идеи оно там работает через раз почему-то. Поэтому включаем при загрузке любой страницы
-		RegisterModuleDependences("main", "OnPageStart", $this->MODULE_ID, "CarrotQuestEventHandlers", "IncludeHandler");
+		// Включаем include.php при загрузке каждой страницы
+		RegisterModuleDependences("main", "OnPageStart", $this->MODULE_ID);
 		
 		// Событие коннекта к системе CarrotQuest и идентификации пользователя
 		RegisterModuleDependences("main", "OnAfterEpilog", $this->MODULE_ID, "CarrotQuestEventHandlers", "ConnectHandler");

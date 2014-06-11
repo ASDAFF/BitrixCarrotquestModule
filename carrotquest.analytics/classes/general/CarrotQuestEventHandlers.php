@@ -8,18 +8,6 @@ CModule::IncludeModule('sale');
 class CarrotQuestEventHandlers
 {
 	/**
-	*	Это событие нужно только затем, что по какой-то мистике в событии OnAfterEpilog (ConnectHandler) не вызвается include.php. Костыль, но работает.
-	*/
-	static function IncludeHandler($arFields)
-	{
-		// Тестим класс
-		global $carrotquest_UPDATER;
-		//$carrotquest_UPDATER->UpdateAllTemplates();
-		
-		return true;
-	}
-	
-	/**
 	*	Событие вызывается перед загрузкой любой страницы магазина, подключая carrotquest.
 	*	Кроме того, обрабатывает событие добавления товара в корзину со стороны клиента.
 	*	<b>Параметры:</b>
@@ -164,12 +152,16 @@ class CarrotQuestEventHandlers
 	static function OnUpdateInstalled ($array)
 	{
 		global $carrotquest_UPDATER;
-		if (in_array("sale", $array["arSuccessModules"]))
-			$carrotquest_UPDATER.LoadSaleModuleTemplates();
-		if (in_array("catalog", $array["arSuccessModules"]))
-			$carrotquest_UPDATER.LoadCatalogModuleTemplates();
+		if (in_array("sale", $array["arSuccessModules"]) || in_array("catalog", $array["arSuccessModules"]))
+			$carrotquest_UPDATER->UpdateAllTemplates();
 	}
 	
+	/**
+	* Устанавливает Cookie для события оформления заказа
+	* <b>Параметры:</b>
+	* <var>$items</var> - содержимое корзины в формате Bitrix
+	* <b>Возвращаемое значение:</b> нет
+	*/
 	static function SetBasketItemsCookie ($items)
 	{
 		$cookie = array();

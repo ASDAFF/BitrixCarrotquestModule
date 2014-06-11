@@ -7,14 +7,44 @@ CModule::IncludeModule('sale');
 */
 class CarrotQuestUpdater
 {	
+	/**
+	* ID модуля Carrot Quest
+	*/
 	public $MODULE_ID;
+	
+	/**
+	* Список шаблонов, которые модифицированы модулем.
+	* Индексом служит имя модуля
+	* Каждый шаблон - это объект следующей структуры:
+	*	"NAME" - имя шаблона
+	*	"PATH" - путь к шаблону
+	*	"SITE_BACKUP_PATH" - путь
+	*	"MODIFICATIONS" - массив-список изменений, произведенных с файлами шаблона. Структура элемента:
+	*		"COMPONENT_TEMPLATE_NAME" - имя шаблона компонента
+	*		"COMPONENT_TEMPLATE_PATH" - путь к шаблону компонента
+	*		"COPIED_BY_CARROTQUEST" - был ли шаблон компонента целиком скопирован carrotquest-ом
+	*		"FILES_CREATED" - список путей файлов внутри шаблона, созданных (скопированных) carrotquest-ом. Не учитывает копирование шаблона целиком ("COPIED_BY_CARROTQUEST" = true)
+	*		"FILES_MODIFIED" - список путей файлов, модифицированных carrotquest-ом.	
+	*/
 	private $TEMPLATE_LIST;
+	
+	/**
+	* Список модификаций, которые должны быть проведены над шаблоном для корректной работы с Carrot quest
+	* Формат каждого изменения:
+	*	"Имя модификации" (для удобства - имя компонента) - содержит объект следующего содержания:
+	*		"name" - имя шаблона компонента для модификации
+	*		"path" - абсолютный путь к источнику файлов шаблона
+	*		"data" - массив модификаций файлов внутри шаблона. Каждый элемент имеет следующую структуру:
+	*			"file" - относительный путь к файлу шаблона внутри "path"
+	*			"after" - RegExp, после каждого вхождения которого надо вставить поле "data"
+	*			"data" - Информация, которую необходимо вставить
+	*/
 	private $MODIFICATIONS;
 	
 	function __construct ()
 	{
 		$this->MODULE_ID = CARROTQUEST_MODULE_ID;
-		$this->SetTemplateList();
+		$this->UpdateTemplateList();
 		$this->MODIFICATIONS  = array(
 			// Детальное описание товара
 			"catalog" => array(
@@ -25,7 +55,7 @@ class CarrotQuestUpdater
 						"file" => "bitrix/catalog.element/.default/template.php",
 						"after" => "#END#",
 						"data" =>	"<? //Detailed Product Info Event\n".
-									"	if (COption::GetOptionString('".CARROTQUEST_MODULE_ID."', 'cqTrackProductDetails')) { ?>".
+									"	if (COption::GetOptionString('".CARROTQUEST_MODULE_ID."', 'cqTrackProductDetails')) { ?>\n".
 									"		<script>\n".
 									"			carrotquest.track('".'$product_view'."', {\n".
 									"				objectId: '<?= ".'$arResult["ID"]'."; ?>',\n".
@@ -56,10 +86,12 @@ class CarrotQuestUpdater
 					),
 				),
 			),
+			// Страницы заказа
 			"sale.order.ajax" => array(
 				"name" => "sale.order.ajax",
 				"path" => $_SERVER["DOCUMENT_ROOT"]."/bitrix/components/bitrix/sale.order.ajax/templates/.default/", 
 				"data" => array(
+					// Пред-заказ
 					array (
 						"file" => "summary.php",
 						"after" => "#END#",
@@ -84,6 +116,7 @@ class CarrotQuestUpdater
 									'	}?>'."\n".
 									'</script>',
 					),
+					// Подсчет скидки Carrot Quest
 					array (
 						"file" => "result_modifier.php",
 						"after" => "#END#",
@@ -97,6 +130,7 @@ class CarrotQuestUpdater
 									'		CarrotQuestEventHandlers::SetBasketItemsCookie($arResult["BASKET_ITEMS"])'."\n".
 									'?>',
 					),
+					// Подтверждение заказа
 					array (
 						"file" => "confirm.php",
 						"after" => "#END#",
@@ -114,11 +148,13 @@ class CarrotQuestUpdater
 									'	</script>'."\n".
 									'<? } ?>',
 					),
+					// Английские сообщения для summary.php
 					array (
 						"file" => "lang/en/template.php",
 						"after" => "#END#",
 						"data" =>	'<? $MESS["SOA_TEMPL_SUM_CQ_DISCOUNT"] = "Carrot Quest discount"; ?>',
 					),
+					// Русские сообщения для summary.php
 					array (
 						"file" => "lang/ru/template.php",
 						"after" => "#END#",
@@ -128,13 +164,27 @@ class CarrotQuestUpdater
 			),
 		);
 	}
-
-	public function SetTemplateList ($object = false)
+	
+	/**
+	*	Обновляет $this->TEMPLATE_LIST и соответствующие поля в опциях модуля (COption), в зависимости от $object.
+	*	<b>Параметры:</b>
+	*	<var>$object</var> - принимает значения:
+	*		false (по умолчанию) - считать список из параметров модуля
+	*		строка - преобразовать в объект (json) и записать в список
+	*		объект или массив - записать в список
+	*	<b>Возвращаемое значение:</b>
+	*	true в случае успеха, false - если $object некорректен
+	*/
+	public function UpdateTemplateList ($object = false)
 	{
 		// Формируем массив		
 		$type = gettype($object);
 		if (!$object)
-			$this->TEMPLATE_LIST = json_decode(COption::GetOptionString($this->MODULE_ID, "cqReplacedTemplates"));
+		{
+			$nameList = json_decode(COption::GetOptionString($this->MODULE_ID, "cqReplacedTemplates"));
+			foreach ($nameList as $name)
+				$this->TEMPLATE_LIST[$name] = json_decode(COption::GetOptionString($this->MODULE_ID, "cq_template_".$name));	
+		}
 		elseif ($type == 'string')
 			$this->TEMPLATE_LIST = json_decode($object);
 		elseif ($type != 'array' && $type != 'object')
@@ -142,39 +192,45 @@ class CarrotQuestUpdater
 		else
 			$this->TEMPLATE_LIST = $object;
 		
-		COption::SetOptionString(CARROTQUEST_MODULE_ID,"cqReplacedTemplates",json_encode($this->TEMPLATE_LIST));
+		// Производим запись
+		$nameList = array();
+		foreach ($this->TEMPLATE_LIST as $name => $template)
+		{
+			$nameList[] = $name;
+			COption::SetOptionString(CARROTQUEST_MODULE_ID,"cq_template_".$name,json_encode($template));
+		}
+		COption::SetOptionString(CARROTQUEST_MODULE_ID,"cqReplacedTemplates",json_encode($nameList));
 		
 		return true;
 	}
 	
+	/**
+	*	Получает $this->TEMPLATE_LIST из значений массива $_REQUEST[], заполняемого файлом /include/templateOptions.php
+	*	<b>Параметры:</b> нет
+	*	<b>Возвращаемое значение:</b>
+	*	true
+	*/
 	public function GetListFromRequest ()
 	{
 		$this->TEMPLATE_LIST = array();
 
 		foreach ($_REQUEST as $key => $value)
-		{
 			if (preg_match('/carrotquest_template_([\s\S]+)/', $key, $matches))
 				$this->TEMPLATE_LIST[$matches[1]] = array(
 					"NAME" => $matches[1],
 				);
-			/* Для выпадающего списка
-			if (preg_match('/carrotquest_site_([\s\S]+)/', $key, $matches))
-				$this->TEMPLATE_LIST[$key] = array(
-					"site" => $matches[1],
-					"template" => false,
-				);
-			
-			if (preg_match('/carrotquest_template_([\s\S]+)\^([\s\S]+)/', $key, $matches))
-				$this->TEMPLATE_LIST[$key] = array(
-					"site" => $matches[1],
-					"template" => $matches[2],
-				);*/
-		}
-		COption::SetOptionString(CARROTQUEST_MODULE_ID,"cqReplacedTemplates",json_encode($this->TEMPLATE_LIST));
+		$this->UpdateTemplateList($this->TEMPLATE_LIST);
 
 		return true;
 	}
 	
+	/**
+	*	Проверяет, закрыты ли теги php (<? ?>) в заданном файле.
+	*	<b>Параметры:</b>
+	*	<var>$fileName</var> - Путь к проверяемому файлу
+	*	<b>Возвращаемое значение:</b>
+	*	true, если теги закрыты, false - если нет.
+	*/
 	private function phpIsClosed ($fileName)
 	{
 		/*
@@ -269,20 +325,13 @@ class CarrotQuestUpdater
 		return ($status != 2);
 	}
 	
+	/**
+	*	Обновляет код шаблонов по $this->TEMPLATE_LIST и $this->MODIFICATIONS
+	*	<b>Параметры:</b> нет
+	*	<b>Возвращаемое значение:</b> нет
+	*/
 	public function UpdateAllTemplates ()
 	{
-		/**
-			Полная структура шаблона:
-			"NAME" - имя шаблона
-			"PATH" - путь к шаблону
-			"SITE_BACKUP_PATH" - путь
-			"MODIFICATIONS" - массив-список изменений, произведенных с файлами шаблона. Структура элемента:
-				"COMPONENT_TEMPLATE_NAME" - имя шаблона компонента
-				"COMPONENT_TEMPLATE_PATH" - путь к шаблону компонента
-				"COPIED_BY_CARROTQUEST" - был ли шаблон компонента целиком скопирован carrotquest-ом
-				"FILES_CREATED" - список путей файлов внутри шаблона, созданных (скопированных) carrotquest-ом. Не учитывает копирование шаблона целиком ("COPIED_BY_CARROTQUEST" = true)
-				"FILES_MODIFIED" - список путей файлов, модифицированных carrotquest-ом.
-		*/
 		foreach($this->TEMPLATE_LIST as $tplName => & $tpl)
 		{ 
 			// Создаем backup
@@ -290,45 +339,45 @@ class CarrotQuestUpdater
 			$tpl["SITE_BACKUP_PATH"] = CARROTQUEST_BACKUP_PATH.$tplName;
 			$tpl["PATH"] = $_SERVER["DOCUMENT_ROOT"]."/bitrix/templates/".$tplName;
 			CheckDirPath($tpl["SITE_BACKUP_PATH"]);	
-			CopyDirFiles(
-				$tpl["PATH"],
-				$tpl["SITE_BACKUP_PATH"],
-				true, true);
+			CopyDirFiles($tpl["PATH"], $tpl["SITE_BACKUP_PATH"], true, true);
 			
 			// Модифицируем шаблон по нашим правилам
-			$tpl['MODIFICATIONS'] = array();
-			
+			if (!is_array($tpl['MODIFICATIONS']))
+				$tpl['MODIFICATIONS'] = array();
 			foreach ($this->MODIFICATIONS as $value)
+			{
+				$this->RestoreTemplate($tpl);
 				$this->ModifyTemplate($value["name"], $value["path"], $value["data"], $tpl);
+			}
 		}
-		
-		COption::SetOptionString(CARROTQUEST_MODULE_ID,"cqReplacedTemplates",json_encode($this->TEMPLATE_LIST));
+		// Обновляем COption
+		$this->UpdateTemplateList($this->TEMPLATE_LIST);
 	}
 	
 	public function RestoreAllTemplates ()
 	{
 		foreach($this->TEMPLATE_LIST as $tpl)
 			$this->RestoreTemplate($tpl);
+		// Обновляем COption
+		$this->UpdateTemplateList($this->TEMPLATE_LIST);
 	}
 	
 	/**
-	* Переопределяет текущий шаблон вывода компонента Bitrix.
-	* При необходимости копирует его из стандартных шаблонов в папки /bitrix/templates/имя_шаблона_сайта/components/bitrix/
+	* Изменяет шаблон $componentTemplateName для работы с Carrot Quest.
+	* При необходимости копирует его из $path в папки /bitrix/templates/имя_шаблона_сайта/components/bitrix/$componentTEmplateName
 	* <b>Параметры:</b>
+	* <var>$componentTemlateName</var> - имя компонента, который необходимо подменить.
 	* <var>$path</var> - путь к шаблону, который необходимо подменить.
-	* <var>$data</var> - массив данных, которые надо вписать в шаблон. В формате <code>{file: "template.php", after: "regexp", data: ""}</code>
-	* Путь к файлу - относительно $path.
-	* Поле after может содержать ключевое слово #END# - тогда запись будет осуществлена в конец файла.
+	* <var>$data</var> - массив данных, которые надо вписать в шаблон. В формате $this->MODIFICATIONS
+	* <var>$templateToModify</var> - шаблон, по которому производится модификация из $this->TEMPLATE_LIST
 	* <b>Возвращаемое значение:</b>
 	* true - в случае успеха обновления, false - в случае неудачи.
 	*/
 	public function ModifyTemplate ($componentTemplateName, $path, $data, & $templateToModify)
 	{
 		$result = true;
-		
 		// Путь к шаблонам компонентов для данного шаблона сайта
-		$componentTemplatePath = $templateToModify["PATH"].'/components/bitrix/'.$componentTemplateName."/";
-
+		$componentTemplatePath = $templateToModify["PATH"].'/components/bitrix/'.$componentTemplateName."/.default/";
 		// Собираем инфо о модификации
 		$componentTemplateInfo = array(
 			"COMPONENT_TEMPLATE_NAME" => $componentTemplateName,
@@ -357,39 +406,27 @@ class CarrotQuestUpdater
 				if (!file_exists($file))
 				{
 					if (file_exists($path.$change["file"]))
-						// Копируем из исходного шаблона
-						$result = copy($file, $path.$change["file"]);
-					else
-						// Создаем новый пустой файл
-						$result = RewriteFile($file,'');
+						$result = copy($file, $path.$change["file"]); // Копируем из исходного шаблона
 					$componentTemplateInfo['FILES_CREATED'][] = $file;
 				};
 				
 				if ($result)
 				{
 					$componentTemplateInfo['FILES_MODIFIED'][] = $file;
-					// Обновляем содержимое файла
 					$insert = "\n<!-- Carrot Quest Insert Start -->\n".$change["data"]."\n<!-- Carrot Quest Insert End -->\n";	
 					
 					// Вставляем текст
 					if ($change["after"] == "#END#")
 					{
-						// Необходимо закрыть php если он был не закрыт...
-						if (!$this->phpIsClosed($file))
+						if (!$this->phpIsClosed($file)) // Необходимо закрыть php если он был не закрыт...
 							$insert = "\n?>".$insert;
-						
 						file_put_contents($file, $insert, FILE_APPEND);
 					}
 					else
 					{
 						$content = file_get_contents ($file);
-						if ($content)
-						{
-							$content = preg_replace("(".$change["after"].")", '$0'.$insert, $content);
-							$result = RewriteFile($file, $content);
-						}
-						else
-							$result = false;
+						$content = preg_replace("(".$change["after"].")", '$0'.$insert, $content);
+						$result = RewriteFile($file, $content);
 					};
 				};
 			};
@@ -403,7 +440,15 @@ class CarrotQuestUpdater
 		return $result;
 	}
 	
-	public function RestoreTemplate ($tpl)
+	/**
+	* Восстанавливает шаблон, удаляя из него вставки Carrot quest.
+	* <b>Параметры:</b>
+	* <var>$componentTemlateName</var> - имя компонента, который необходимо подменить.
+	* <var>$tpl</var> - шаблон модификации из $this->TEMPLATE_LIST
+	* <var>$delete_created</var> - удалять ли созданные Carrot quest-ом файлы и папки
+	* <b>Возвращаемое значение:</b> нет
+	*/
+	public function RestoreTemplate (&$tpl, $delete_created = false)
 	{
 		$tpl = (array)$tpl;
 		// Нейтрализуем изменения
@@ -416,6 +461,16 @@ class CarrotQuestUpdater
 				$content = preg_replace($pattern, "", $content);
 				RewriteFile($file, $content);
 			}
+			
+			if ($delete_created)
+			{
+				if ($mod -> CREATED_BY_CARROTQUEST)
+					DeleteDirFileEx($mod -> COMPONENT_TEMPLATE_PATH);
+				else
+					foreach($mod -> FILES_CREATED as $file)
+						DeleteDirFileEx($file);
+			}
 		}
+		$tpl["MODIFICATIONS"] -> FILES_MODIFIED = array();
 	}
 }

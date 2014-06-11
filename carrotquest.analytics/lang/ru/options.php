@@ -15,4 +15,5 @@ $MESS["CARROTQUEST_OPTIONS_ACTIVATE_BONUS"] = "Включить бонусную систему";
 $MESS["CARROTQUEST_OPTIONS_ADMIN_LINK"] = "Ссылка на панель администратора Carrot quest";
 $MESS["CARROTQUEST_OPTIONS_ADMIN_LINK_NAME"] = "Перейти";
 $MESS["CARROTQUEST_OPTIONS_CARROTQUEST_ADMIN"] = "Панель администратора Carrot quest";
+$MESS["CARROTQUEST_OPTIONS_TEMPLATE_TAB_TITLE"] = "Шаблоны";
 ?>

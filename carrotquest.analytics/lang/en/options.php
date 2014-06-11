@@ -15,4 +15,5 @@
 	$MESS['CARROTQUEST_OPTIONS_ADMIN_LINK'] = 'Link to Carrot quest admin panel';
 	$MESS['CARROTQUEST_OPTIONS_ADMIN_LINK_NAME'] = 'Go';
 	$MESS['CARROTQUEST_OPTIONS_CARROTQUEST_ADMIN'] = 'Carrot quest administrator panel';
+	$MESS["CARROTQUEST_OPTIONS_TEMPLATE_TAB_TITLE"] = "Templates";
 ?>

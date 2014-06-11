@@ -14,17 +14,14 @@ class CarrotQuestUpdater
 	
 	/**
 	* Список шаблонов, которые модифицированы модулем.
-	* Индексом служит имя модуля
+	* Индексом служит имя шаблона сайта.
 	* Каждый шаблон - это объект следующей структуры:
-	*	"NAME" - имя шаблона
-	*	"PATH" - путь к шаблону
-	*	"SITE_BACKUP_PATH" - путь
+	*	"NAME" - имя шаблона сайта.
 	*	"MODIFICATIONS" - массив-список изменений, произведенных с файлами шаблона. Структура элемента:
-	*		"COMPONENT_TEMPLATE_NAME" - имя шаблона компонента
 	*		"COMPONENT_TEMPLATE_PATH" - путь к шаблону компонента
 	*		"COPIED_BY_CARROTQUEST" - был ли шаблон компонента целиком скопирован carrotquest-ом
-	*		"FILES_CREATED" - список путей файлов внутри шаблона, созданных (скопированных) carrotquest-ом. Не учитывает копирование шаблона целиком ("COPIED_BY_CARROTQUEST" = true)
-	*		"FILES_MODIFIED" - список путей файлов, модифицированных carrotquest-ом.	
+	*		"FILES_CREATED" - список относительных путей файлов внутри шаблона, созданных (скопированных) carrotquest-ом. Не учитывает копирование шаблона целиком ("COPIED_BY_CARROTQUEST" = true)
+	*		"FILES_MODIFIED" - список относительных путей файлов, модифицированных carrotquest-ом.	
 	*/
 	private $TEMPLATE_LIST;
 	
@@ -179,7 +176,7 @@ class CarrotQuestUpdater
 	{
 		// Формируем массив		
 		$type = gettype($object);
-		if (!$object)
+		if ($type=='boolean' && !$object)
 		{
 			$nameList = json_decode(COption::GetOptionString($this->MODULE_ID, "cqReplacedTemplates"));
 			foreach ($nameList as $name)
@@ -336,17 +333,15 @@ class CarrotQuestUpdater
 		{ 
 			// Создаем backup
 			$tpl = (array)$tpl;
-			$tpl["SITE_BACKUP_PATH"] = CARROTQUEST_BACKUP_PATH.$tplName;
-			$tpl["PATH"] = $_SERVER["DOCUMENT_ROOT"]."/bitrix/templates/".$tplName;
-			CheckDirPath($tpl["SITE_BACKUP_PATH"]);	
-			CopyDirFiles($tpl["PATH"], $tpl["SITE_BACKUP_PATH"], true, true);
+			CheckDirPath(CARROTQUEST_BACKUP_PATH.$tplName);	
+			CopyDirFiles($_SERVER["DOCUMENT_ROOT"]."/bitrix/templates/".$tplName, CARROTQUEST_BACKUP_PATH.$tplName, true, true);
 			
 			// Модифицируем шаблон по нашим правилам
 			if (!is_array($tpl['MODIFICATIONS']))
 				$tpl['MODIFICATIONS'] = array();
 			foreach ($this->MODIFICATIONS as $value)
 			{
-				$this->RestoreTemplate($tpl);
+				$this->RestoreTemplate($tpl)
 				$this->ModifyTemplate($value["name"], $value["path"], $value["data"], $tpl);
 			}
 		}
@@ -356,7 +351,7 @@ class CarrotQuestUpdater
 	
 	public function RestoreAllTemplates ()
 	{
-		foreach($this->TEMPLATE_LIST as $tpl)
+		foreach($this->TEMPLATE_LIST as &$tpl)
 			$this->RestoreTemplate($tpl);
 		// Обновляем COption
 		$this->UpdateTemplateList($this->TEMPLATE_LIST);
@@ -377,10 +372,9 @@ class CarrotQuestUpdater
 	{
 		$result = true;
 		// Путь к шаблонам компонентов для данного шаблона сайта
-		$componentTemplatePath = $templateToModify["PATH"].'/components/bitrix/'.$componentTemplateName."/.default/";
+		$componentTemplatePath = $_SERVER["DOCUMENT_ROOT"]."/bitrix/templates/".$templateToModify["NAME"].'/components/bitrix/'.$componentTemplateName."/.default/";
 		// Собираем инфо о модификации
 		$componentTemplateInfo = array(
-			"COMPONENT_TEMPLATE_NAME" => $componentTemplateName,
 			"COMPONENT_TEMPLATE_PATH" => $componentTemplatePath,
 		);
 
@@ -407,12 +401,12 @@ class CarrotQuestUpdater
 				{
 					if (file_exists($path.$change["file"]))
 						$result = copy($file, $path.$change["file"]); // Копируем из исходного шаблона
-					$componentTemplateInfo['FILES_CREATED'][] = $file;
+					$componentTemplateInfo['FILES_CREATED'][] = $change["file"];
 				};
 				
 				if ($result)
 				{
-					$componentTemplateInfo['FILES_MODIFIED'][] = $file;
+					$componentTemplateInfo['FILES_MODIFIED'][] = $change["file"];
 					$insert = "\n<!-- Carrot Quest Insert Start -->\n".$change["data"]."\n<!-- Carrot Quest Insert End -->\n";	
 					
 					// Вставляем текст
@@ -456,10 +450,11 @@ class CarrotQuestUpdater
 		{
 			foreach ($mod -> FILES_MODIFIED as $file)
 			{
-				$content = file_get_contents ($file);
+				$path = ($mod -> COMPONENT_TEMPLATE_PATH).$file;
+				$content = file_get_contents ($path);
 				$pattern = "~\n<!-- Carrot Quest Insert Start -->([\s\S]*?)<!-- Carrot Quest Insert End -->\n~is";
 				$content = preg_replace($pattern, "", $content);
-				RewriteFile($file, $content);
+				RewriteFile($path, $content);
 			}
 			
 			if ($delete_created)
@@ -468,7 +463,8 @@ class CarrotQuestUpdater
 					DeleteDirFileEx($mod -> COMPONENT_TEMPLATE_PATH);
 				else
 					foreach($mod -> FILES_CREATED as $file)
-						DeleteDirFileEx($file);
+						DeleteDirFileEx(($mod -> COMPONENT_TEMPLATE_PATH).$file);
+				$tpl["MODIFICATIONS"] -> FILES_CREATED = array();
 			}
 		}
 		$tpl["MODIFICATIONS"] -> FILES_MODIFIED = array();

@@ -21,6 +21,10 @@
 		COption::SetOptionString(CARROTQUEST_MODULE_ID,"cqTrackProductDetails",$_POST['TrackProductDetails'] ? "checked" : "");
 		COption::SetOptionString(CARROTQUEST_MODULE_ID,"cqTrackOrderConfirm",$_POST['TrackOrderConfirm'] ? "checked" : "");
 		COption::SetOptionString(CARROTQUEST_MODULE_ID,"cqActivateBonus",$_POST['ActivateBonus'] ? "checked" : "");
+		
+		global $carrotquest_UPDATER;
+		$carrotquest_UPDATER->GetListFromRequest();
+		$carrotquest_UPDATER->UpdateAllTemplates();
 	}
 	 
 	 // Описываем табы административной панели битрикса
@@ -30,6 +34,12 @@
 			'TAB'   => GetMessage('MAIN_TAB_SET'),
 			'ICON'  => 'fileman_settings',
 			'TITLE' => GetMessage('MAIN_TAB_TITLE_SET' )
+		),
+		array(
+			'DIV'   => 'edit2',
+			'TAB'   => GetMessage('CARROTQUEST_OPTIONS_TEMPLATE_TAB_TITLE'),
+			'ICON'  => 'fileman_settings',
+			'TITLE' => GetMessage('CARROTQUEST_OPTIONS_TEMPLATE_TAB_TITLE' )
 		),
 	);
 	 
@@ -113,7 +123,7 @@
         </td>
 	</tr>
 	<?$oTabControl->BeginNextTab();?>
-	
+	<? include(CARROTQUEST_INCLUDE_PATH."templateOptions.php"); ?>
     <?$oTabControl->Buttons();?>
     <input type="submit" name="Update" value="<?= GetMessage('CARROTQUEST_OPTIONS_BUTTON_SAVE') ?>" />
     <input type="reset" name="reset" value="<?= GetMessage('CARROTQUEST_OPTIONS_BUTTON_RESET') ?>" />

@@ -44,7 +44,8 @@
 	foreach($templateList as $template)
 	{ 
 		$checked = "checked";
-		if ($content && !in_array($template, $templateList))
+
+		if (is_array($content) && !in_array($template, $content))
 			$checked = ""
 		?>
 		<li class="carrotquest_menu_item" title="<?= GetMessage('CARROTQUEST_TEMPLATES_MOD_TEMPLATE'); ?>">

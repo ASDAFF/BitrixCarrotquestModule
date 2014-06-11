@@ -341,7 +341,7 @@ class CarrotQuestUpdater
 				$tpl['MODIFICATIONS'] = array();
 			foreach ($this->MODIFICATIONS as $value)
 			{
-				$this->RestoreTemplate($tpl)
+				$this->RestoreTemplate($tpl);
 				$this->ModifyTemplate($value["name"], $value["path"], $value["data"], $tpl);
 			}
 		}

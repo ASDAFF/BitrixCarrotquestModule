@@ -11,6 +11,7 @@
 		"cqTrackProductDetails"	=> "checked",
 		"cqTrackOrderConfirm"	=> "checked",
 		"cqActivateBonus"		=> "checked",
+		"cqReplacedTemplates"	=> "[]"
 	);
 
 ?>

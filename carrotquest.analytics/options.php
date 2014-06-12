@@ -23,8 +23,7 @@
 		COption::SetOptionString(CARROTQUEST_MODULE_ID,"cqActivateBonus",$_POST['ActivateBonus'] ? "checked" : "");
 		
 		global $carrotquest_UPDATER;
-		$carrotquest_UPDATER->GetListFromRequest();
-		$carrotquest_UPDATER->UpdateAllTemplates();
+		$carrotquest_UPDATER->UpdateFromRequest();
 	}
 	 
 	 // Описываем табы административной панели битрикса

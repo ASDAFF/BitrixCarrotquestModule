@@ -94,12 +94,12 @@ class CarrotQuestUpdater
 						"after" => "#END#",
 						"data" =>	'<script>'."\n".
 									'<? // Pre-order event'."\n".
-									'	if (COption::GetOptionString(CARROTQUEST_MODULE_ID,"cqTrackPreOrder"))'."\n".
+									'	if (COption::GetOptionString("'.CARROTQUEST_MODULE_ID.'","cqTrackPreOrder"))'."\n".
 									'	{ ?>'."\n".
 									'		carrotquest.track("Pre Order");'."\n".
 									'	<? } '."\n".
 									'	/* Carrot quest discount field */'."\n".
-									'	if (COption::GetOptionString(CARROTQUEST_MODULE_ID,"cqActivateBonus") && doubleval($arResult["CARROTQUEST_DISCOUNT_PRICE"]) > 0)'."\n".
+									'	if (COption::GetOptionString("'.CARROTQUEST_MODULE_ID.'","cqActivateBonus") && doubleval($arResult["CARROTQUEST_DISCOUNT_PRICE"]) > 0)'."\n".
 									'	{'."\n".
 									'		?>'."\n".
 									'			var itogo = $(".bx_ordercart_order_sum").find("tr").last();'."\n".
@@ -120,10 +120,10 @@ class CarrotQuestUpdater
 						"data" =>	'<?'."\n".
 									'	// Count discount'."\n".
 									'	global $carrotquest_API;'."\n".
-									'	if (COption::GetOptionString(CARROTQUEST_MODULE_ID,"cqActivateBonus"))'."\n".
+									'	if (COption::GetOptionString("'.CARROTQUEST_MODULE_ID.'","cqActivateBonus"))'."\n".
 									'		$arResult = $carrotquest_API->CalcDiscount($arResult);'."\n".
 									'	// When order is done, items are not present. So we write it to cookie'."\n".
-									'	if (COption::GetOptionString(CARROTQUEST_MODULE_ID,"cqTrackOrderConfirm") != "")'."\n".
+									'	if (COption::GetOptionString("'.CARROTQUEST_MODULE_ID.'","cqTrackOrderConfirm") != "")'."\n".
 									'		CarrotQuestEventHandlers::SetBasketItemsCookie($arResult["BASKET_ITEMS"])'."\n".
 									'?>',
 					),
@@ -131,8 +131,8 @@ class CarrotQuestUpdater
 					array (
 						"file" => "confirm.php",
 						"after" => "#END#",
-						"data" =>	'<? Track Order Event -->'."\n".
-									'	if (COption::GetOptionString(CARROTQUEST_MODULE_ID, "cqActivateBonus")) { ?>'."\n".
+						"data" =>	'<? // Track Order Event'."\n".
+									'	if (COption::GetOptionString("'.CARROTQUEST_MODULE_ID.'", "cqTrackOrderConfirm")) { ?>'."\n".
 									'	<script>'."\n".
 									'		var items = carrotquest_cookie.get("carrotquest_basket_items");'."\n".
 									'		var orderID = carrotquest_cookie.get("carrotquest_order_id");'."\n".
@@ -174,11 +174,12 @@ class CarrotQuestUpdater
 	*/
 	public function UpdateTemplateList ($object = false)
 	{
-		// Формируем массив		
+		// Формируем массив
 		$type = gettype($object);
 		if ($type=='boolean' && !$object)
 		{
 			$nameList = json_decode(COption::GetOptionString($this->MODULE_ID, "cqReplacedTemplates"));
+			
 			foreach ($nameList as $name)
 				$this->TEMPLATE_LIST[$name] = json_decode(COption::GetOptionString($this->MODULE_ID, "cq_template_".$name));	
 		}
@@ -323,6 +324,51 @@ class CarrotQuestUpdater
 	}
 	
 	/**
+	*	Обновляет текущие шаблоны из массива $_REQUEST.
+	*	Уже существующие шаблоны не обновляются. Те, которых нет в $_REQUEST - откатываются. Новые - создаются.
+	*	<b>Параметры:</b> нет
+	*	<b>Возвращаемое значение:</b> нет
+	*/
+	public function UpdateFromRequest ()
+	{
+		// Формируем новый список
+		$newTemplateList = array();
+		foreach ($_REQUEST as $key => $value)
+			if (preg_match('/carrotquest_template_([\s\S]+)/', $key, $matches))
+				$newTemplateList[$matches[1]] = array(
+					"NAME" => $matches[1],
+				);
+		if (!$this->TEMPLATE_LIST)
+			$this->TEMPLATE_LIST = array();
+
+		// Очищаем шаблоны, которых нет в новом списке
+		$deleteArray = array_diff_key($this->TEMPLATE_LIST, $newTemplateList);
+		foreach ($deleteArray as &$template)
+		{
+			$this->RestoreTemplate($this->TEMPLATE_LIST[$template -> NAME]);
+			unset($this->TEMPLATE_LIST[$template -> NAME]);
+		};
+		
+		// Добавляем новые шаблоны
+		$insertArray = array_diff_key($newTemplateList, $this->TEMPLATE_LIST);
+		foreach ($insertArray as &$template)
+		{
+			// Создаем backup
+			$template= (array)$template;
+			CheckDirPath(CARROTQUEST_BACKUP_PATH.$template["NAME"]);	
+			CopyDirFiles($_SERVER["DOCUMENT_ROOT"]."/bitrix/templates/".$template["NAME"], CARROTQUEST_BACKUP_PATH.$template["NAME"], true, true);
+			
+			// Модифицируем
+			$template['MODIFICATIONS'] = array();
+			foreach ($this->MODIFICATIONS as $value)
+				$this->ModifyTemplate($value["name"], $value["path"], $value["data"], $template);
+		};
+		// Обновляем список
+		$this->TEMPLATE_LIST = array_merge($this->TEMPLATE_LIST, $insertArray);
+		$this->UpdateTemplateList($this->TEMPLATE_LIST);	
+	}
+	
+	/**
 	*	Обновляет код шаблонов по $this->TEMPLATE_LIST и $this->MODIFICATIONS
 	*	<b>Параметры:</b> нет
 	*	<b>Возвращаемое значение:</b> нет
@@ -430,7 +476,7 @@ class CarrotQuestUpdater
 		$templateToModify['MODIFICATIONS'][] = $componentTemplateInfo;
 		if (!$result)
 			$this->RestoreTemplate($templateToModify);
-		
+
 		return $result;
 	}
 	
@@ -467,6 +513,6 @@ class CarrotQuestUpdater
 				$tpl["MODIFICATIONS"] -> FILES_CREATED = array();
 			}
 		}
-		$tpl["MODIFICATIONS"] -> FILES_MODIFIED = array();
 	}
+	
 }

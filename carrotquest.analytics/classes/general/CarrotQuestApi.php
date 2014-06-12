@@ -196,7 +196,7 @@ class CarrotQuestApi
 			return $answer;
 		}
 		else {
-			// Остался кук CQBasketItems, мы его поймаем при загрузке страницы заказа в js
+			// Остался кук carrotquest_basket_items, мы его поймаем при загрузке страницы заказа в js
 			setcookie('carrotquest_order_id', $ID,0,"/");
 			return array('server' => false);
 		}

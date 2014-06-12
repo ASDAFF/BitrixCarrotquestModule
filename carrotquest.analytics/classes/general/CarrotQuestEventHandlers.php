@@ -164,27 +164,30 @@ class CarrotQuestEventHandlers
 	*/
 	static function SetBasketItemsCookie ($items)
 	{
-		$cookie = array();
-		
-		// Кодировка Windows-1251 распознается некорректно...
-		$lang = CLanguage::GetList($by="active", $order="desc", Array("NAME" => "russian"));
-		$lang = $lang->Fetch();
-			
-		foreach ($items as $value)
+		if (!array_key_exists('carrotquest_basket_items', $_COOKIE) || !$_COOKIE['carrotquest_basket_items'] || $_COOKIE['carrotquest_basket_items'] == '[]')
 		{
-			$item = array(
-				"objectId"		=> $value['ID'],
-				"objectName"	=> $value['NAME'],
-				"objectUrl"		=> $_SERVER['HTTP_HOST'].$value['DETAIL_PAGE_URL'],
-				"quantity"		=> $value['QUANTITY'],
-				"price"			=> $value['PRICE'],
-			);
+			$cookie = array();
 			
-			if ($lang['CHARSET'] == 'windows-1251')
-				CarrotQuestEventHandlers::ToUTF($item);
+			// Кодировка Windows-1251 распознается некорректно...
+			$lang = CLanguage::GetList($by="active", $order="desc", Array("NAME" => "russian"));
+			$lang = $lang->Fetch();
 				
-			array_push($cookie,$item);
+			foreach ($items as $value)
+			{
+				$item = array(
+					"objectId"		=> $value['ID'],
+					"objectName"	=> $value['NAME'],
+					"objectUrl"		=> $_SERVER['HTTP_HOST'].$value['DETAIL_PAGE_URL'],
+					"quantity"		=> $value['QUANTITY'],
+					"price"			=> $value['PRICE'],
+				);
+				
+				if ($lang['CHARSET'] == 'windows-1251')
+					CarrotQuestEventHandlers::ToUTF($item);
+					
+				array_push($cookie,$item);
+			};
+			setcookie('carrotquest_basket_items', json_encode($cookie), 0, "/");
 		};
-		setcookie('carrotquest_basket_items', json_encode($cookie), 0, "/");
 	}
 }

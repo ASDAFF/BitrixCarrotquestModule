@@ -38,8 +38,8 @@ Class carrotquest_analytics extends CModule
 		}
 		else
 		{
-			$this->MODULE_VERSION = '1.1.5';
-			$this->MODULE_VERSION_DATE = '11.06.2014';
+			$this->MODULE_VERSION = '1.1.6';
+			$this->MODULE_VERSION_DATE = '12.06.2014';
 		}
 		
 		$this->PARTNER_NAME = "Carrot quest";
@@ -78,12 +78,14 @@ Class carrotquest_analytics extends CModule
 				elseif (!array_key_exists('ApiSecret', $_REQUEST) || strlen($_REQUEST['ApiSecret']) != 64)
 					array_push($errors, "CARROTQUEST_KEY_ERROR");
 			};
-
+			
+			// Почему-то при uninstall параметры не удаляются целиком...
+			COption::RemoveOption($this->MODULE_ID);
 			if (empty($errors))
 			{
 				// Пишем параметры модуля
-				COption::SetOptionString(CARROTQUEST_MODULE_ID,"cqApiKey",$_REQUEST['ApiKey']);
-				COption::SetOptionString(CARROTQUEST_MODULE_ID,"cqApiSecret",$_REQUEST['ApiSecret']);
+				COption::SetOptionString($this->MODULE_ID, "cqApiKey", $_REQUEST['ApiKey']);
+				COption::SetOptionString($this->MODULE_ID, "cqApiSecret", $_REQUEST['ApiSecret']);
 				$APPLICATION->IncludeAdminFile(GetMessage("CARROTQUEST_INSTALL_TITLE"), $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$this->MODULE_ID."/install/step2.php");
 			}
 			else
@@ -102,10 +104,7 @@ Class carrotquest_analytics extends CModule
 				$GLOBALS["carrotquest_errors"] = $errors;	
 				
 				// Стереть ключи
-				if (COption::GetOptionString(CARROTQUEST_MODULE_ID,"cqApiKey"))
-					COption::RemoveOption(CARROTQUEST_MODULE_ID, "cqApiKey");
-				if (COption::GetOptionString(CARROTQUEST_MODULE_ID,"cqApiSecret"))
-					COption::RemoveOption(CARROTQUEST_MODULE_ID, "cqApiSecret");
+				RemoveOption($this->MODULE_ID);
 			}
 			else
 			{						
@@ -113,7 +112,7 @@ Class carrotquest_analytics extends CModule
 				$phpCache = new CPHPCache();
 				$phpCache->CleanDir();
 				
-				RegisterModule(CARROTQUEST_MODULE_ID);
+				RegisterModule($this->MODULE_ID);
 			};
 			
 			$APPLICATION->IncludeAdminFile(GetMessage("CARROTQUEST_INSTALL_TITLE"), $_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/".$this->MODULE_ID."/install/step3.php");
@@ -123,9 +122,8 @@ Class carrotquest_analytics extends CModule
 	function DoUninstall()
 	{
 		global $DOCUMENT_ROOT, $APPLICATION;
-
-		COption::RemoveOption("cqApiKey");
-		COption::RemoveOption("cqApiSecret");
+		
+		COption::RemoveOption($this->MODULE_ID);
 		
 		$this->UnInstallFiles();
 		$this->UnInstallDB();

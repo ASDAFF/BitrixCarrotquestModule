@@ -202,6 +202,14 @@ class CarrotQuestApi
 		}
     }
 	
+	/**
+	*	Метод модифицирует массив $arResult, добавляя в него скидку Carrot quest
+	*	<b>Параметры:</b>
+	*	<var>$arResult</var> - Массив в формате битрикс, содержащий параметры заказа.
+	*	<b>Возвращаемое значение:</b>
+	*	Измененный <var>$arResult</var>
+	*	<var>$_COOKIE['carrotquest_price']</var> - стоимость заказа с учетом скидки Carrot quest
+	*/
 	public function CalcDiscount($arResult)
 	{
 		// Вычисляем скидку
@@ -210,7 +218,7 @@ class CarrotQuestApi
 		$CarrotInfo = $this->GetSelectedCarrots();
 		if ($CarrotInfo)
 		{
-			// Максимальное количество морковок, которым можно расплатиться за заказ
+			// Максимальное количетво морковок, которым можно расплатиться за заказ
 			$max_carrots = floor($total * $CarrotInfo['max_discount']);
 
 			// Валидация скидки

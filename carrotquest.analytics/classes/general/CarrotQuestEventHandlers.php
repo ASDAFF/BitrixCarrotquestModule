@@ -143,19 +143,6 @@ class CarrotQuestEventHandlers
 		return true;
 	}
 	
-	/** ≈сли обновились сторонние модули template-ы которых использует Carrot Quest,
-	*  этот метод копирует необходимые новые template-ы и встраивает в них код Carrot Quest.
-	*	<b>ѕараметры:</b>
-	*	<var>$array</var> - параметры обновленных модулей
-	*	<b>¬озвращаемое значение:</b> отсутствует.
-	*/
-	static function OnUpdateInstalled ($array)
-	{
-		global $carrotquest_UPDATER;
-		if (in_array("sale", $array["arSuccessModules"]) || in_array("catalog", $array["arSuccessModules"]))
-			$carrotquest_UPDATER->UpdateAllTemplates();
-	}
-	
 	/**
 	* ”станавливает Cookie дл€ событи€ оформлени€ заказа
 	* <b>ѕараметры:</b>

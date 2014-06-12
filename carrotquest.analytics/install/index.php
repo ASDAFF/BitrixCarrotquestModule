@@ -38,7 +38,7 @@ Class carrotquest_analytics extends CModule
 		}
 		else
 		{
-			$this->MODULE_VERSION = '1.1.6';
+			$this->MODULE_VERSION = '1.1.7';
 			$this->MODULE_VERSION_DATE = '12.06.2014';
 		}
 		
@@ -200,9 +200,6 @@ Class carrotquest_analytics extends CModule
 		// Событие трекинга различных событий
 		RegisterModuleDependences("sale", "OnBasketAdd", $this->MODULE_ID, "CarrotQuestEventHandlers", "OnBasketAdd");
 		
-		// Событие обновления модулей, нам нужно обновить template-ы
-		RegisterModuleDependences("main", "OnUpdateInstalled", $this->MODULE_ID, "CarrotQuestEventHandlers", "OnUpdateInstalled");
-		
 		return true;
 	}
 	
@@ -213,7 +210,6 @@ Class carrotquest_analytics extends CModule
 		UnRegisterModuleDependences("sale", "OnBeforeOrderAdd", $this->MODULE_ID, "CarrotQuestEventHandlers", "OnBeforeOrderAddHandler");
 		UnRegisterModuleDependences("sale", "OnOrderAdd", $this->MODULE_ID, "CarrotQuestEventHandlers", "OnOrderAddHandler");
 		UnRegisterModuleDependences("main", "OnBasketAdd", $this->MODULE_ID, "CarrotQuestEventHandlers", "OnBasketAdd");
-		UnRegisterModuleDependences("main", "OnUpdateInstalled", $this->MODULE_ID, "CarrotQuestEventHandlers", "OnUpdateInstalled");
 		return true;
 	}
 	

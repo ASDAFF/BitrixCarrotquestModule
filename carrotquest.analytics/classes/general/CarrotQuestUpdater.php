@@ -395,6 +395,11 @@ class CarrotQuestUpdater
 		$this->UpdateTemplateList($this->TEMPLATE_LIST);
 	}
 	
+	/**
+	*	Вырезает вставки Carrot quest по $this->TEMPLATE_LIST и $this->MODIFICATIONS. Скоированные шаблоны не удаляются!
+	*	<b>Параметры:</b> нет
+	*	<b>Возвращаемое значение:</b> нет
+	*/
 	public function RestoreAllTemplates ()
 	{
 		foreach($this->TEMPLATE_LIST as &$tpl)

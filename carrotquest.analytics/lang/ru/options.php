@@ -16,4 +16,5 @@ $MESS["CARROTQUEST_OPTIONS_ADMIN_LINK"] = "Ссылка на панель администратора Carro
 $MESS["CARROTQUEST_OPTIONS_ADMIN_LINK_NAME"] = "Перейти";
 $MESS["CARROTQUEST_OPTIONS_CARROTQUEST_ADMIN"] = "Панель администратора Carrot quest";
 $MESS["CARROTQUEST_OPTIONS_TEMPLATE_TAB_TITLE"] = "Шаблоны";
+$MESS['CARROTQUEST_OPTIONS_BUTTON_CLEAN_BACKUP'] = "Очистить файлы резервной копии";
 ?>

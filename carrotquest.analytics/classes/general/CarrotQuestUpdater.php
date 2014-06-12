@@ -163,6 +163,46 @@ class CarrotQuestUpdater
 	}
 	
 	/**
+	*	Создает backup всего шаблона.
+	*	<var>$object</var> - принимает значения:
+	*	<b>Возвращаемое значение:</b> 
+	*	true - в случае успеха, false - неудачи
+	*/
+	private function CreateBackup ($tpl)
+	{
+		$tpl = (array)$tpl;
+		$backupPath = CARROTQUEST_BACKUP_PATH.$tpl["NAME"].date("_Y.m.d_H.i.s");
+		$tplPath = $_SERVER['DOCUMENT_ROOT']."/bitrix/templates/".$tpl["NAME"];
+		CheckDirPath($backupPath);
+		return CopyDirFiles($tplPath, $backupPath, true, true);
+	}
+	
+	/**
+	*	Очищает папку с бэкапами шаблонов сайтов
+	*	<var>$all</var> - если этот параметр равен true, то будут удалены все бэкапы. Иначе - все кроме последних.
+	*	<b>Возвращаемое значение:</b> нет
+	*/
+	public function CleanBackups ($all = false)
+	{
+		if ($all)
+			DeleteDirFilesEx(CARROTQUEST_RELATIVE_BACKUP_PATH);
+		else
+		{
+			$backupList = scandir(CARROTQUEST_BACKUP_PATH);
+			for ($i = 1; $i < count($backupList); $i++)
+			{
+				if ($backuList[$i][0] != '.' && $backupList[$i-1][0] != '.')
+				{
+					$prefixPrev = substr($backupList[$i-1],0,-18); 
+					$prefixThis = substr($backupList[$i],0,-18); 
+					if ($prefixPrev == $prefixThis)
+						DeleteDirFilesEx(CARROTQUEST_BACKUP_RELATIVE_PATH.$backupList[$i-1]);
+				}
+			}
+		}
+	}
+	
+	/**
 	*	Обновляет $this->TEMPLATE_LIST и соответствующие поля в опциях модуля (COption), в зависимости от $object.
 	*	<b>Параметры:</b>
 	*	<var>$object</var> - принимает значения:
@@ -345,6 +385,7 @@ class CarrotQuestUpdater
 		$deleteArray = array_diff_key($this->TEMPLATE_LIST, $newTemplateList);
 		foreach ($deleteArray as &$template)
 		{
+			$this->CreateBackup($template);
 			$this->RestoreTemplate($this->TEMPLATE_LIST[$template -> NAME]);
 			unset($this->TEMPLATE_LIST[$template -> NAME]);
 		};
@@ -353,11 +394,8 @@ class CarrotQuestUpdater
 		$insertArray = array_diff_key($newTemplateList, $this->TEMPLATE_LIST);
 		foreach ($insertArray as &$template)
 		{
-			// Создаем backup
 			$template= (array)$template;
-			CheckDirPath(CARROTQUEST_BACKUP_PATH.$template["NAME"]);	
-			CopyDirFiles($_SERVER["DOCUMENT_ROOT"]."/bitrix/templates/".$template["NAME"], CARROTQUEST_BACKUP_PATH.$template["NAME"], true, true);
-			
+					$this->CreateBackup($template);
 			// Модифицируем
 			$template['MODIFICATIONS'] = array();
 			foreach ($this->MODIFICATIONS as $value)
@@ -377,10 +415,8 @@ class CarrotQuestUpdater
 	{
 		foreach($this->TEMPLATE_LIST as $tplName => & $tpl)
 		{ 
-			// Создаем backup
 			$tpl = (array)$tpl;
-			CheckDirPath(CARROTQUEST_BACKUP_PATH.$tplName);	
-			CopyDirFiles($_SERVER["DOCUMENT_ROOT"]."/bitrix/templates/".$tplName, CARROTQUEST_BACKUP_PATH.$tplName, true, true);
+			$this->CreateBackup($tpl);
 			
 			// Модифицируем шаблон по нашим правилам
 			if (!is_array($tpl['MODIFICATIONS']))
@@ -403,7 +439,10 @@ class CarrotQuestUpdater
 	public function RestoreAllTemplates ()
 	{
 		foreach($this->TEMPLATE_LIST as &$tpl)
+		{
+			$this->CreateBackup($tpl);
 			$this->RestoreTemplate($tpl);
+		}
 		// Обновляем COption
 		$this->UpdateTemplateList($this->TEMPLATE_LIST);
 	}

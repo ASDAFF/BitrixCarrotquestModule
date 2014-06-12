@@ -23,7 +23,10 @@
 		COption::SetOptionString(CARROTQUEST_MODULE_ID,"cqActivateBonus",$_POST['ActivateBonus'] ? "checked" : "");
 		
 		global $carrotquest_UPDATER;
-		$carrotquest_UPDATER->UpdateFromRequest();
+		if ($_REQUEST['CleanBackup'] == 'Y')
+			$carrotquest_UPDATER->CleanBackups();
+		else
+			$carrotquest_UPDATER->UpdateFromRequest();
 	}
 	 
 	 // Описываем табы административной панели битрикса
@@ -123,9 +126,12 @@
 	</tr>
 	<?$oTabControl->BeginNextTab();?>
 	<? include(CARROTQUEST_INCLUDE_PATH."templateOptions.php"); ?>
+	<br>
+	<input type="submit" name="CleanBackupButton" value="<?= GetMessage('CARROTQUEST_OPTIONS_BUTTON_CLEAN_BACKUP'); ?>" onclick="$('input[name=CleanBackup]').val('Y');"/>
     <?$oTabControl->Buttons();?>
     <input type="submit" name="Update" value="<?= GetMessage('CARROTQUEST_OPTIONS_BUTTON_SAVE') ?>" />
     <input type="reset" name="reset" value="<?= GetMessage('CARROTQUEST_OPTIONS_BUTTON_RESET') ?>" />
     <input type="hidden" name="Update" value="Y" />
+	<input type="hidden" name="CleanBackup" value="N" />
     <?$oTabControl->End();?>
 </form>
